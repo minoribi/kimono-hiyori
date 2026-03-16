@@ -1,0 +1,1914 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>きもの日和 | あなたの着物ライフをもっと楽しく、もっと自由に</title>
+    <meta name="description" content="きもの日和は、手持ちの着物をデジタル管理し、コーディネートをシミュレーションできる着物好きのためのアプリです。AIコーデ提案・着用記録・全国着物店検索も。無料で使えます。">
+    <meta property="og:title" content="きもの日和 | 着物コーディネートアプリ">
+    <meta property="og:description" content="手持ちの着物・帯・小物を写真で登録し、スマホの上でコーディネートをシミュレーション。AIコーデ提案や着用記録も残せる無料アプリです。">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+         :root {
+            --ink: #4F3420;
+            --ink-soft: rgba(79, 52, 32, 0.72);
+            --ink-faint: rgba(79, 52, 32, 0.48);
+            --paper: #FAF7F3;
+            --paper-warm: #F5EFE4;
+            --clay: #8B4513;
+            --clay-light: #B87040;
+            --clay-deep: #5C2D0A;
+            --indigo: #2d4a6e;
+            --indigo-light: #5a7da6;
+            --sage: #6B8C6E;
+            --sage-light: #a3b89a;
+            --gold: #C9A84C;
+            --gold-light: #dfc87a;
+            --plum: #7a4a6a;
+            --mist: #FAF7F3;
+            --shadow-sm: 0 4px 16px rgba(79, 52, 32, 0.06);
+            --shadow-md: 0 12px 32px rgba(79, 52, 32, 0.10);
+            --shadow-lg: 0 24px 60px rgba(79, 52, 32, 0.14);
+            --radius-xl: 32px;
+            --radius-lg: 24px;
+            --radius-md: 18px;
+            --radius-sm: 12px;
+            --content: 1120px;
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', sans-serif;
+            color: var(--ink);
+            background: var(--paper);
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+        
+        .serif {
+            font-family: 'Shippori Mincho', 'Hiragino Mincho ProN', serif;
+        }
+        
+        img {
+            max-width: 100%;
+            display: block;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        /* ── 和柄背景 ── */
+        
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M40 0L80 40L40 80L0 40Z' fill='none' stroke='%23c9a84c' stroke-width='0.3' opacity='0.12'/%3E%3Cpath d='M40 10L70 40L40 70L10 40Z' fill='none' stroke='%23c9a84c' stroke-width='0.2' opacity='0.08'/%3E%3C/svg%3E");
+            mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at 15% 5%, rgba(181, 96, 58, 0.12), transparent 35%), radial-gradient(ellipse at 85% 8%, rgba(45, 74, 110, 0.10), transparent 30%), radial-gradient(ellipse at 50% 95%, rgba(111, 132, 100, 0.08), transparent 35%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        /* ── レイアウト ── */
+        
+        .wrap {
+            width: min(calc(100% - 48px), var(--content));
+            margin: 0 auto;
+        }
+        /* ── ヘッダー ── */
+        
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(24px) saturate(1.8);
+            -webkit-backdrop-filter: blur(24px) saturate(1.8);
+            background: rgba(250, 246, 240, 0.78);
+            border-bottom: 1px solid rgba(26, 19, 13, 0.06);
+            transition: box-shadow 0.4s ease;
+        }
+        
+        .site-header.scrolled {
+            box-shadow: 0 4px 32px rgba(40, 22, 10, 0.08);
+        }
+        
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 14px 0;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: transform 0.3s var(--ease-out);
+        }
+        
+        .brand:hover {
+            transform: scale(1.02);
+        }
+        
+        .brand-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(181, 96, 58, 0.14), rgba(191, 154, 67, 0.10));
+            border: 1px solid rgba(181, 96, 58, 0.12);
+            box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            object-fit: contain;
+            padding: 5px;
+        }
+        
+        .brand-text strong {
+            display: block;
+            font-size: 1.15rem;
+            letter-spacing: 0.1em;
+            font-family: 'Shippori Mincho', serif;
+        }
+        
+        .brand-text span {
+            display: block;
+            font-size: 0.76rem;
+            color: var(--ink-faint);
+            letter-spacing: 0.06em;
+        }
+        
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        
+        .nav a:not(.btn) {
+            font-size: 0.9rem;
+            color: var(--ink-soft);
+            padding: 8px 14px;
+            border-radius: 999px;
+            transition: all 0.25s ease;
+        }
+        
+        .nav a:not(.btn):hover {
+            color: var(--clay);
+            background: rgba(181, 96, 58, 0.06);
+        }
+        /* ── ボタン ── */
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 13px 26px;
+            border-radius: 999px;
+            border: none;
+            font-weight: 700;
+            font-size: 0.94rem;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: all 0.35s var(--ease-out);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+        }
+        
+        .btn:hover::after {
+            opacity: 1;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+        }
+        
+        .btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn-primary {
+            color: #fff;
+            background: linear-gradient(135deg, var(--clay) 0%, var(--clay-deep) 100%);
+            box-shadow: 0 8px 24px rgba(181, 96, 58, 0.3), 0 2px 8px rgba(181, 96, 58, 0.2);
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 14px 36px rgba(181, 96, 58, 0.38), 0 4px 12px rgba(181, 96, 58, 0.24);
+        }
+        
+        .btn-secondary {
+            color: var(--ink);
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(26, 19, 13, 0.10);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-secondary:hover {
+            background: #fff;
+            box-shadow: var(--shadow-md);
+        }
+        /* ── グラスカード ── */
+        
+        .glass {
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(26, 19, 13, 0.07);
+            background: rgba(255, 253, 248, 0.72);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+        /* ── 装飾区切り ── */
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 16px 0;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            max-width: 120px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(191, 154, 67, 0.25));
+        }
+        
+        .divider::after {
+            background: linear-gradient(90deg, rgba(191, 154, 67, 0.25), transparent);
+        }
+        
+        .divider span {
+            width: 6px;
+            height: 6px;
+            background: rgba(191, 154, 67, 0.4);
+            border-radius: 50%;
+            transform: rotate(45deg);
+        }
+        /* ── アイブロウ ── */
+        
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, rgba(181, 96, 58, 0.10), rgba(191, 154, 67, 0.08));
+            color: var(--clay-deep);
+            font-size: 0.82rem;
+            letter-spacing: 0.1em;
+            border: 1px solid rgba(181, 96, 58, 0.10);
+            font-family: 'Shippori Mincho', serif;
+        }
+        /* ══════════════════════════════════
+           HERO
+           ══════════════════════════════════ */
+        
+        .hero {
+            padding: 80px 0 48px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .hero-badge {
+            margin-bottom: 24px;
+        }
+        
+        .hero-title {
+            font-size: clamp(2.6rem, 5.5vw, 4.4rem);
+            line-height: 1.15;
+            letter-spacing: 0.04em;
+            font-weight: 800;
+            font-family: 'Shippori Mincho', serif;
+        }
+        
+        .hero-title .accent {
+            background: linear-gradient(135deg, var(--clay), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-sub {
+            margin: 16px auto 0;
+            font-size: 1.2rem;
+            color: var(--ink-soft);
+            max-width: 36rem;
+            font-family: 'Shippori Mincho', serif;
+            letter-spacing: 0.06em;
+        }
+        
+        .hero-lead {
+            margin: 28px auto 0;
+            font-size: 1.02rem;
+            color: var(--ink-soft);
+            max-width: 42rem;
+            line-height: 2;
+        }
+        
+        .hero-actions {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 36px;
+        }
+        /* ── ヒーロービジュアル ── */
+        
+        .hero-visual {
+            margin-top: 56px;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .phone {
+            position: relative;
+            width: 280px;
+            height: 570px;
+            padding: 12px;
+            border-radius: 40px;
+            background: linear-gradient(180deg, #2a2620, #131110);
+            box-shadow: 0 40px 60px rgba(18, 10, 5, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.06) inset, 0 -2px 0 rgba(255, 255, 255, 0.04) inset;
+            z-index: 2;
+        }
+        
+        .phone::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 24px;
+            background: #1a1816;
+            border-radius: 0 0 16px 16px;
+            z-index: 3;
+        }
+        
+        .phone-screen {
+            height: 100%;
+            border-radius: 30px;
+            overflow: hidden;
+            background: linear-gradient(180deg, #faf4eb, #f0e6d6);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .phone-status {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 20px 6px;
+            font-size: 0.68rem;
+            font-weight: 700;
+        }
+        
+        .phone-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 18px;
+            border-bottom: 1px solid rgba(26, 19, 13, 0.06);
+            background: rgba(255, 255, 255, 0.50);
+        }
+        
+        .phone-header strong {
+            font-size: 0.96rem;
+            letter-spacing: 0.06em;
+            font-family: 'Shippori Mincho', serif;
+        }
+        
+        .phone-body {
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .phone-banner {
+            padding: 20px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, var(--clay), var(--clay-light));
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(181, 96, 58, 0.20);
+        }
+        
+        .phone-banner strong {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 6px;
+            line-height: 1.35;
+            font-family: 'Shippori Mincho', serif;
+        }
+        
+        .phone-banner p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.84);
+            font-size: 0.78rem;
+        }
+        
+        .phone-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .phone-card {
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(26, 19, 13, 0.05);
+            background: rgba(255, 255, 255, 0.80);
+        }
+        
+        .phone-card strong {
+            display: block;
+            font-size: 0.78rem;
+            margin-bottom: 4px;
+        }
+        
+        .phone-card p {
+            margin: 0;
+            font-size: 0.68rem;
+            color: var(--ink-soft);
+        }
+        
+        .mini-meter {
+            height: 5px;
+            border-radius: 999px;
+            background: rgba(26, 19, 13, 0.06);
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .mini-meter span {
+            display: block;
+            height: 100%;
+            border-radius: inherit;
+        }
+        
+        .phone-chips {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(26, 19, 13, 0.05);
+            background: rgba(255, 255, 255, 0.80);
+        }
+        
+        .phone-chip {
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            background: linear-gradient(135deg, rgba(181, 96, 58, 0.08), rgba(191, 154, 67, 0.06));
+            color: var(--clay-deep);
+            border: 1px solid rgba(181, 96, 58, 0.08);
+        }
+        /* ── フローティングカード ── */
+        
+        .float-card {
+            position: absolute;
+            width: 210px;
+            padding: 18px;
+            border-radius: 20px;
+            border: 1px solid rgba(26, 19, 13, 0.06);
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(12px);
+            z-index: 3;
+            animation: drift 7s ease-in-out infinite;
+        }
+        
+        .float-card h4 {
+            font-size: 0.88rem;
+            font-family: 'Shippori Mincho', serif;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        
+        .float-card p {
+            margin: 0;
+            font-size: 0.78rem;
+            color: var(--ink-soft);
+            line-height: 1.6;
+        }
+        
+        .float-card.left {
+            left: calc(50% - 340px);
+            top: 40px;
+            animation-delay: -1.5s;
+        }
+        
+        .float-card.right {
+            right: calc(50% - 340px);
+            bottom: 20px;
+            animation-delay: -4s;
+        }
+        /* ── ヒーローキャラクター ── */
+        
+        .hero-character {
+            position: absolute;
+            right: calc(50% - 380px);
+            bottom: -40px;
+            width: 200px;
+            z-index: 4;
+            animation: drift 8s ease-in-out infinite;
+            animation-delay: -2s;
+            filter: drop-shadow(0 12px 24px rgba(18, 10, 5, 0.15));
+            pointer-events: none;
+        }
+        
+        .hero-character img {
+            width: 100%;
+            height: auto;
+        }
+        
+        .chip-inline {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        
+        .chip-inline span {
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            background: linear-gradient(135deg, rgba(181, 96, 58, 0.08), rgba(191, 154, 67, 0.06));
+            color: var(--clay-deep);
+            border: 1px solid rgba(181, 96, 58, 0.08);
+        }
+        /* ══════════════════════════════════
+           セクション共通
+           ══════════════════════════════════ */
+        
+        .section {
+            padding: 48px 0;
+        }
+        
+        .section-shell {
+            padding: 52px;
+            position: relative;
+        }
+        
+        .section-shell::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 48px;
+            right: 48px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(181, 96, 58, 0.15), rgba(191, 154, 67, 0.15), transparent);
+        }
+        
+        .section-head {
+            margin-bottom: 40px;
+        }
+        
+        .section-head .eyebrow {
+            margin-bottom: 16px;
+        }
+        
+        .section-title {
+            margin: 0;
+            font-size: clamp(1.9rem, 3vw, 2.8rem);
+            line-height: 1.25;
+            letter-spacing: 0.04em;
+            font-weight: 800;
+            font-family: 'Shippori Mincho', serif;
+        }
+        
+        .section-lead {
+            margin-top: 16px;
+            color: var(--ink-soft);
+            font-size: 1rem;
+            max-width: 42rem;
+            line-height: 1.9;
+        }
+        /* ══════════════════════════════════
+           FEATURES — 機能紹介
+           ══════════════════════════════════ */
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .feature-card {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 20px;
+            align-items: start;
+            padding: 28px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(26, 19, 13, 0.06);
+            background: rgba(255, 255, 255, 0.82);
+            transition: all 0.4s var(--ease-out);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(181, 96, 58, 0.12);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 20px;
+            display: grid;
+            place-items: center;
+            font-size: 1.5rem;
+            border: 1px solid rgba(26, 19, 13, 0.04);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.4s var(--ease-out);
+        }
+        
+        .feature-card:hover .feature-icon {
+            transform: scale(1.08) rotate(-3deg);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .feature-icon.closet {
+            background: linear-gradient(135deg, rgba(181, 96, 58, 0.12), rgba(191, 154, 67, 0.08));
+        }
+        
+        .feature-icon.closet::before {
+            content: '';
+            width: 28px;
+            height: 28px;
+            background: var(--clay);
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z'/%3E%3Ccircle cx='12' cy='13' r='4'/%3E%3C/svg%3E") no-repeat center;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z'/%3E%3Ccircle cx='12' cy='13' r='4'/%3E%3C/svg%3E") no-repeat center;
+        }
+        
+        .feature-icon.coord {
+            background: linear-gradient(135deg, rgba(45, 74, 110, 0.12), rgba(111, 132, 100, 0.08));
+        }
+        
+        .feature-icon.coord::before {
+            content: '';
+            width: 28px;
+            height: 28px;
+            background: var(--indigo);
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Crect x='3' y='3' width='7' height='7'/%3E%3Crect x='14' y='3' width='7' height='7'/%3E%3Crect x='14' y='14' width='7' height='7'/%3E%3Crect x='3' y='14' width='7' height='7'/%3E%3C/svg%3E") no-repeat center;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Crect x='3' y='3' width='7' height='7'/%3E%3Crect x='14' y='3' width='7' height='7'/%3E%3Crect x='14' y='14' width='7' height='7'/%3E%3Crect x='3' y='14' width='7' height='7'/%3E%3C/svg%3E") no-repeat center;
+        }
+        
+        .feature-icon.diary {
+            background: linear-gradient(135deg, rgba(111, 132, 100, 0.14), rgba(45, 74, 110, 0.08));
+        }
+        
+        .feature-icon.diary::before {
+            content: '';
+            width: 28px;
+            height: 28px;
+            background: var(--sage);
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M4 19.5A2.5 2.5 0 016.5 17H20'/%3E%3Cpath d='M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z'/%3E%3C/svg%3E") no-repeat center;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M4 19.5A2.5 2.5 0 016.5 17H20'/%3E%3Cpath d='M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z'/%3E%3C/svg%3E") no-repeat center;
+        }
+        
+        .feature-icon.calendar {
+            background: linear-gradient(135deg, rgba(122, 74, 106, 0.12), rgba(191, 154, 67, 0.08));
+        }
+        
+        .feature-icon.calendar::before {
+            content: '';
+            width: 28px;
+            height: 28px;
+            background: var(--plum);
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E") no-repeat center;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E") no-repeat center;
+        }
+        
+        .feature-icon.ai {
+            background: linear-gradient(135deg, rgba(191, 154, 67, 0.14), rgba(181, 96, 58, 0.08));
+        }
+        
+        .feature-icon.ai::before {
+            content: '';
+            width: 28px;
+            height: 28px;
+            background: var(--gold);
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpolygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/%3E%3C/svg%3E") no-repeat center;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpolygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/%3E%3C/svg%3E") no-repeat center;
+        }
+        
+        .feature-icon.store {
+            background: linear-gradient(135deg, rgba(45, 74, 110, 0.14), rgba(122, 74, 106, 0.08));
+        }
+        
+        .feature-icon.store::before {
+            content: '';
+            width: 28px;
+            height: 28px;
+            background: var(--indigo);
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E") no-repeat center;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E") no-repeat center;
+        }
+        
+        .feature-card h3 {
+            margin: 0 0 8px;
+            font-size: 1.06rem;
+            font-family: 'Shippori Mincho', serif;
+            font-weight: 700;
+        }
+        
+        .feature-card p {
+            margin: 0;
+            font-size: 0.92rem;
+            color: var(--ink-soft);
+            line-height: 1.75;
+        }
+        /* ══════════════════════════════════
+           STEPS — 使い方
+           ══════════════════════════════════ */
+        
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            counter-reset: step;
+        }
+        
+        .step-card {
+            padding: 28px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(26, 19, 13, 0.06);
+            background: rgba(255, 255, 255, 0.82);
+            transition: all 0.4s var(--ease-out);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(181, 96, 58, 0.12);
+        }
+        
+        .step-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 38px;
+            height: 38px;
+            border-radius: 13px;
+            margin-bottom: 16px;
+            font-weight: 800;
+            font-size: 0.92rem;
+            background: linear-gradient(135deg, var(--clay), var(--clay-light));
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(181, 96, 58, 0.2);
+        }
+        
+        .step-card h3 {
+            margin: 0 0 8px;
+            font-size: 1.04rem;
+            font-family: 'Shippori Mincho', serif;
+            font-weight: 700;
+        }
+        
+        .step-card p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--ink-soft);
+            line-height: 1.75;
+        }
+        
+        .step-card::after {
+            content: '';
+            position: absolute;
+            top: 42px;
+            right: -11px;
+            width: 22px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(181, 96, 58, 0.25), transparent);
+            border-radius: 1px;
+        }
+        
+        .step-card:last-child::after {
+            display: none;
+        }
+        /* ══════════════════════════════════
+           WORRIES — お悩み
+           ══════════════════════════════════ */
+        
+        .worries-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+        
+        .worry-card {
+            padding: 28px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(26, 19, 13, 0.06);
+            background: rgba(255, 255, 255, 0.82);
+            transition: all 0.4s var(--ease-out);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .worry-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(181, 96, 58, 0.12);
+        }
+        
+        .worry-card.solution {
+            background: linear-gradient(180deg, rgba(181, 96, 58, 0.08), rgba(255, 253, 248, 0.92));
+            border-color: rgba(181, 96, 58, 0.15);
+        }
+        
+        .worry-emoji {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 38px;
+            height: 38px;
+            border-radius: 13px;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, rgba(181, 96, 58, 0.12), rgba(191, 154, 67, 0.08));
+        }
+        
+        .worry-emoji::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background: var(--clay);
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M16 16s-1.5-2-4-2-4 2-4 2'/%3E%3Cline x1='9' y1='9' x2='9.01' y2='9'/%3E%3Cline x1='15' y1='9' x2='15.01' y2='9'/%3E%3C/svg%3E") no-repeat center;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M16 16s-1.5-2-4-2-4 2-4 2'/%3E%3Cline x1='9' y1='9' x2='9.01' y2='9'/%3E%3Cline x1='15' y1='9' x2='15.01' y2='9'/%3E%3C/svg%3E") no-repeat center;
+        }
+        
+        .worry-card.solution .worry-emoji::before {
+            background: #fff;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M22 11.08V12a10 10 0 11-5.93-9.14'/%3E%3Cpath d='M22 4L12 14.01l-3-3'/%3E%3C/svg%3E") no-repeat center;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M22 11.08V12a10 10 0 11-5.93-9.14'/%3E%3Cpath d='M22 4L12 14.01l-3-3'/%3E%3C/svg%3E") no-repeat center;
+        }
+        
+        .worry-card.solution .worry-emoji {
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            box-shadow: 0 4px 12px rgba(191, 154, 67, 0.2);
+        }
+        
+        .worry-card h3 {
+            margin: 0 0 8px;
+            font-size: 1.02rem;
+            font-family: 'Shippori Mincho', serif;
+            font-weight: 700;
+        }
+        
+        .worry-card p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--ink-soft);
+            line-height: 1.75;
+        }
+        /* ══════════════════════════════════
+           PERSONA — こんな方に
+           ══════════════════════════════════ */
+        
+        .persona-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+        
+        .persona-card {
+            padding: 28px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(26, 19, 13, 0.06);
+            background: rgba(255, 255, 255, 0.82);
+            transition: all 0.4s var(--ease-out);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .persona-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(181, 96, 58, 0.12);
+        }
+        
+        .persona-card h3 {
+            margin: 0 0 8px;
+            font-size: 1.04rem;
+            font-family: 'Shippori Mincho', serif;
+            font-weight: 700;
+        }
+        
+        .persona-card p {
+            margin: 0;
+            font-size: 0.92rem;
+            color: var(--ink-soft);
+            line-height: 1.75;
+        }
+        /* ── 数値カード ── */
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-top: 28px;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 28px 22px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(26, 19, 13, 0.06);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(250, 244, 234, 0.88));
+            transition: all 0.4s var(--ease-out);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .stat-number {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 2.2rem;
+            font-weight: 800;
+            font-family: 'Shippori Mincho', serif;
+            background: linear-gradient(135deg, var(--clay), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-card p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--ink-soft);
+        }
+        /* ══════════════════════════════════
+           SCREENS — 画面プレビュー
+           ══════════════════════════════════ */
+        
+        .screens-grid {
+            display: grid;
+            gap: 18px;
+        }
+        
+        .screen-card {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            gap: 24px;
+            padding: 24px;
+            align-items: center;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(26, 19, 13, 0.06);
+            background: rgba(255, 255, 255, 0.82);
+            transition: all 0.4s var(--ease-out);
+        }
+        
+        .screen-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(181, 96, 58, 0.12);
+        }
+        
+        .mini-phone {
+            width: 160px;
+            padding: 8px;
+            border-radius: 26px;
+            background: linear-gradient(180deg, #2a2620, #161412);
+            box-shadow: var(--shadow-lg);
+            transition: transform 0.5s var(--ease-out);
+        }
+        
+        .screen-card:hover .mini-phone {
+            transform: scale(1.03);
+        }
+        
+        .mini-phone-inner {
+            min-height: 280px;
+            border-radius: 20px;
+            padding: 12px;
+            background: linear-gradient(180deg, #fbf6ed, #f0e4d2);
+        }
+        
+        .mini-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.6rem;
+            margin-bottom: 10px;
+            color: var(--ink-soft);
+        }
+        
+        .mini-hero-block {
+            padding: 14px;
+            min-height: 80px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(181, 96, 58, 0.92), rgba(212, 137, 106, 0.78));
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: end;
+            box-shadow: 0 4px 12px rgba(181, 96, 58, 0.15);
+        }
+        
+        .mini-hero-block strong {
+            display: block;
+            font-size: 0.82rem;
+            font-family: 'Shippori Mincho', serif;
+        }
+        
+        .mini-hero-block span {
+            font-size: 0.6rem;
+            line-height: 1.5;
+        }
+        
+        .mini-stack {
+            display: grid;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .mini-block {
+            padding: 10px;
+            min-height: 42px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid rgba(26, 19, 13, 0.04);
+        }
+        
+        .mini-block span {
+            font-size: 0.6rem;
+            line-height: 1.5;
+            color: var(--ink-soft);
+        }
+        
+        .mini-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid rgba(26, 19, 13, 0.04);
+        }
+        
+        .mini-tile {
+            min-height: 48px;
+            border-radius: 10px;
+            background: rgba(111, 132, 100, 0.14);
+        }
+        
+        .screen-copy .label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 14px;
+            margin-bottom: 14px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, rgba(45, 74, 110, 0.08), rgba(111, 132, 100, 0.06));
+            color: var(--indigo);
+            font-size: 0.8rem;
+            font-weight: 700;
+            border: 1px solid rgba(45, 74, 110, 0.08);
+        }
+        
+        .screen-copy h3 {
+            margin: 0 0 8px;
+            font-size: 1.06rem;
+            font-family: 'Shippori Mincho', serif;
+            font-weight: 700;
+        }
+        
+        .screen-copy p {
+            margin: 0;
+            color: var(--ink-soft);
+            font-size: 0.92rem;
+            line-height: 1.75;
+        }
+        
+        .screen-copy ul {
+            margin: 14px 0 0;
+            padding-left: 20px;
+            color: var(--ink-soft);
+            font-size: 0.92rem;
+        }
+        
+        .screen-copy ul li {
+            margin-bottom: 4px;
+        }
+        
+        .screen-copy ul li::marker {
+            color: var(--clay);
+        }
+        /* ══════════════════════════════════
+           CTA
+           ══════════════════════════════════ */
+        
+        .cta {
+            padding: 48px 0 80px;
+        }
+        
+        .cta-card {
+            padding: 56px;
+            background: radial-gradient(ellipse at 10% 10%, rgba(191, 154, 67, 0.12), transparent 40%), radial-gradient(ellipse at 90% 90%, rgba(111, 132, 100, 0.10), transparent 40%), linear-gradient(160deg, #faf6f0 0%, #f3ebe0 50%, #f0e8da 100%);
+            color: var(--ink);
+            border: 1px solid rgba(181, 96, 58, 0.12);
+            box-shadow: 0 8px 40px rgba(181, 96, 58, 0.08), 0 1px 3px rgba(26, 19, 13, 0.04);
+        }
+        
+        .cta-card h2 {
+            margin: 16px 0 0;
+            font-size: clamp(2rem, 3vw, 3rem);
+            line-height: 1.2;
+            letter-spacing: 0.03em;
+            font-weight: 800;
+            font-family: 'Shippori Mincho', serif;
+            color: var(--clay);
+        }
+        
+        .cta-card>p {
+            margin: 20px 0 0;
+            max-width: 42rem;
+            color: var(--ink-soft);
+            line-height: 1.9;
+        }
+        
+        .cta-actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-top: 32px;
+        }
+        /* ── CTAキャラクター ── */
+        
+        .cta-content {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+        
+        .cta-text {
+            flex: 1;
+        }
+        
+        .cta-character {
+            flex-shrink: 0;
+            width: 180px;
+            animation: drift 7s ease-in-out infinite;
+            animation-delay: -3s;
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.2));
+        }
+        
+        .cta-character img {
+            width: 100%;
+            height: auto;
+        }
+        
+        .btn-white {
+            color: #fff;
+            background: var(--clay);
+            box-shadow: 0 8px 24px rgba(181, 96, 58, 0.25);
+        }
+        
+        .btn-white:hover {
+            background: var(--clay-deep);
+            box-shadow: 0 14px 36px rgba(181, 96, 58, 0.30);
+        }
+        
+        .btn-outline {
+            color: var(--clay);
+            background: transparent;
+            border: 1.5px solid var(--clay);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(181, 96, 58, 0.06);
+            border-color: var(--clay-deep);
+            color: var(--clay-deep);
+        }
+        
+        .cta-panels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-top: 36px;
+        }
+        
+        .cta-panel {
+            padding: 26px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            backdrop-filter: blur(8px);
+            transition: all 0.35s var(--ease-out);
+        }
+        
+        .cta-panel:hover {
+            background: rgba(255, 255, 255, 0.10);
+            border-color: rgba(255, 255, 255, 0.16);
+        }
+        
+        .cta-panel strong {
+            display: block;
+            font-size: 1.06rem;
+            margin-bottom: 10px;
+            font-family: 'Shippori Mincho', serif;
+        }
+        
+        .cta-panel ul {
+            margin: 14px 0 0;
+            padding-left: 20px;
+            color: rgba(255, 255, 255, 0.78);
+            line-height: 1.9;
+        }
+        
+        .cta-panel ul li::marker {
+            color: var(--gold-light);
+        }
+        /* ── フッター ── */
+        
+        .footer {
+            padding: 48px 0;
+            color: var(--ink-faint);
+            font-size: 0.84rem;
+            text-align: center;
+            letter-spacing: 0.06em;
+            border-top: 1px solid rgba(26, 19, 13, 0.06);
+        }
+        
+        .footer-inner {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .footer-brand {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--ink);
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .footer-brand img {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .footer-links a {
+            color: var(--ink-soft);
+            font-size: 0.84rem;
+            letter-spacing: 0.04em;
+            transition: color 0.2s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--clay);
+        }
+        
+        .footer-copy {
+            font-size: 0.78rem;
+            color: var(--ink-faint);
+        }
+        /* ── アニメーション ── */
+        
+        [data-reveal] {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+        }
+        
+        [data-reveal].is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .stagger>* {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+        }
+        
+        .stagger.is-visible>*:nth-child(1) {
+            transition-delay: 0.05s;
+        }
+        
+        .stagger.is-visible>*:nth-child(2) {
+            transition-delay: 0.12s;
+        }
+        
+        .stagger.is-visible>*:nth-child(3) {
+            transition-delay: 0.19s;
+        }
+        
+        .stagger.is-visible>*:nth-child(4) {
+            transition-delay: 0.26s;
+        }
+        
+        .stagger.is-visible>*:nth-child(5) {
+            transition-delay: 0.33s;
+        }
+        
+        .stagger.is-visible>*:nth-child(6) {
+            transition-delay: 0.40s;
+        }
+        
+        .stagger.is-visible>* {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        @keyframes drift {
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-12px) rotate(0.5deg);
+            }
+        }
+        /* ── レスポンシブ ── */
+        
+        @media (max-width: 1080px) {
+            .features-grid,
+            .persona-grid,
+            .cta-panels {
+                grid-template-columns: 1fr;
+            }
+            .steps-grid,
+            .worries-grid,
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .screen-card {
+                grid-template-columns: 1fr;
+                justify-items: center;
+            }
+            .screen-copy {
+                width: 100%;
+            }
+            .step-card::after {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 760px) {
+            .wrap {
+                width: min(calc(100% - 28px), var(--content));
+            }
+            .site-header {
+                position: static;
+            }
+            .header-inner {
+                align-items: start;
+                flex-direction: column;
+            }
+            .nav {
+                gap: 8px;
+                justify-content: flex-start;
+            }
+            .hero {
+                padding-top: 32px;
+            }
+            .section-shell {
+                padding: 28px;
+            }
+            .section-shell::before {
+                left: 28px;
+                right: 28px;
+            }
+            .steps-grid,
+            .worries-grid,
+            .stats-grid,
+            .features-grid,
+            .persona-grid {
+                grid-template-columns: 1fr;
+            }
+            .float-card {
+                position: static;
+                width: auto;
+                animation: none;
+            }
+            .hero-character {
+                position: static;
+                width: 140px;
+                animation: none;
+                margin: 0 auto;
+            }
+            .hero-visual {
+                flex-direction: column;
+                align-items: center;
+                gap: 16px;
+            }
+            .phone {
+                width: 100%;
+                max-width: 280px;
+                height: 550px;
+            }
+            .hero-actions,
+            .cta-actions {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .cta-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .cta-character {
+                width: 140px;
+                animation: none;
+            }
+            .cta-card {
+                padding: 28px;
+            }
+            .cta-panels {
+                grid-template-columns: 1fr;
+            }
+            .footer-links {
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="wrap header-inner">
+            <a class="brand" href="#top">
+                <img class="brand-logo" src="kimono_illust.png" alt="きもの日和 ロゴ">
+                <div class="brand-text">
+                    <strong>きもの日和</strong>
+                    <span>着物コーディネートアプリ</span>
+                </div>
+            </a>
+            <nav class="nav" aria-label="ページ内ナビゲーション">
+                <a href="#features">できること</a>
+                <a href="#howto">使い方</a>
+                <a href="#screens">画面</a>
+                <a href="#for-you">こんな方に</a>
+                <a class="btn btn-primary" href="#cta">無料ではじめる</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="top">
+        <!-- ═══ HERO ═══ -->
+        <section class="hero" data-reveal>
+            <div class="wrap">
+                <div class="hero-badge">
+                    <span class="eyebrow">着物コーディネートアプリ</span>
+                </div>
+                <h1 class="hero-title">あなたの着物ライフを、もっと<span class="accent">楽しく</span>、もっと<span class="accent">自由に</span>。</h1>
+                <p class="hero-lead">「今日は何を着よう？」――着物は好きだけど、組み合わせに迷ってしまう。<br>あのお気に入りの帯、どの着物と合わせようかな……。</p>
+                <p class="hero-lead">そんなあなたのコーディネートを、『きもの日和』がそっとお手伝いします。</p>
+                <p class="hero-lead">お手持ちの着物・帯・小物をスマホで撮って登録。<br>画面の上でパズルのように、自由な組み合わせをシミュレーターで試せます。<br>AIがあなたのクローゼットの中から、新しい色の重なりを提案。</p>
+                <p class="hero-lead">自分らしい着こなしを、もっと軽やかに。<br>迷う時間さえも、もっと楽しく、心地よいひとときに。</p>
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="#cta">無料ではじめる</a>
+                    <a class="btn btn-secondary" href="#features">できることを見る</a>
+                </div>
+
+                <div class="hero-visual">
+                    <div class="float-card left">
+                        <h4>スマホでコーデ確認</h4>
+                        <p>登録した着物や帯をレイヤーで重ねて、全身のバランスを着る前にチェック。</p>
+                        <div class="chip-inline">
+                            <span>アイテムを登録</span>
+                            <span>自由に組み合わせ</span>
+                        </div>
+                    </div>
+
+                    <div class="phone" aria-label="ホーム画面イメージ">
+                        <div class="phone-screen">
+                            <div class="phone-status"><span>9:41</span><span>5G 100%</span></div>
+                            <div class="phone-header"><strong>きもの日和</strong><span>今日の装い</span></div>
+                            <div class="phone-body">
+                                <div class="phone-banner">
+                                    <strong>今日のコーディネート</strong>
+                                    <p>春の外出向けに、薄青の小紋と軽やかな名古屋帯を合わせて。</p>
+                                </div>
+                                <div class="phone-cards">
+                                    <div class="phone-card">
+                                        <strong>クローゼット</strong>
+                                        <p>着物 12 / 帯 8</p>
+                                        <div class="mini-meter"><span style="width: 72%; background: linear-gradient(90deg, var(--indigo), var(--sage));"></span></div>
+                                    </div>
+                                    <div class="phone-card">
+                                        <strong>着用記録</strong>
+                                        <p>最近のコーデ 24件</p>
+                                        <div class="mini-meter"><span style="width: 58%; background: linear-gradient(90deg, var(--clay), var(--gold));"></span></div>
+                                    </div>
+                                </div>
+                                <div class="phone-chips">
+                                    <span class="phone-chip">写真登録</span>
+                                    <span class="phone-chip">コーデ作成</span>
+                                    <span class="phone-chip">AI提案</span>
+                                    <span class="phone-chip">日記</span>
+                                    <span class="phone-chip">店舗検索</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="float-card right">
+                        <h4>AIがコーデを提案</h4>
+                        <p>季節やシーンに合わせて、お手持ちの着物からAIが最適な組み合わせを3パターン提案します。</p>
+                        <div class="chip-inline">
+                            <span>季節対応</span>
+                            <span>シーン別提案</span>
+                        </div>
+                    </div>
+
+                    <div class="hero-character" aria-hidden="true">
+                        <img src="character.png" alt="" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider"><span></span></div>
+
+        <!-- ═══ FEATURES ═══ -->
+        <section class="section" id="features">
+            <div class="wrap section-shell glass" data-reveal>
+                <div class="section-head">
+                    <h2 class="section-title">きもの日和でできること</h2>
+                    <p class="section-lead">着物の管理からコーディネート、AI提案、着用記録、着物店検索まで。あなたの着物ライフに必要なことが、このアプリひとつで揃います。</p>
+                </div>
+
+                <div class="features-grid stagger" data-reveal>
+                    <article class="feature-card">
+                        <div class="feature-icon closet"></div>
+                        <div>
+                            <h3>アイテム管理</h3>
+                            <p>着物・帯・小物を写真で登録。<br>あなたのタンスを、いつでも持ち歩けるデジタルクローゼットに。</p>
+                        </div>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon coord"></div>
+                        <div>
+                            <h3>コーデ作成</h3>
+                            <p>手持ちのアイテムを自由に組み合わせて、シミュレーション。<br>お気に入りの組み合わせは、そのまま大切に保存できます。</p>
+                        </div>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon diary"></div>
+                        <div>
+                            <h3>きもの日記</h3>
+                            <p>着た日、場所、その時の思い出をコーデと一緒に。<br>カレンダーで着用履歴を振り返れる、あなただけの着物ダイアリー。</p>
+                        </div>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon calendar"></div>
+                        <div>
+                            <h3>着用カレンダー</h3>
+                            <p>「いつ、どの着物を着たか」をひと目で。<br>着物と過ごす日々が、もっと愛おしくなる記録帳です。</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider"><span></span></div>
+
+        <!-- ═══ HOW TO USE ═══ -->
+        <section class="section" id="howto">
+            <div class="wrap section-shell glass" data-reveal>
+                <div class="section-head">
+                    <h2 class="section-title">かんたん3ステップで、<br>今日のコーデが決まる</h2>
+                    <p class="section-lead">むずかしい操作は一切なし。写真を撮って、組み合わせて、保存するだけ。着物のコーディネートがぐっと身近になります。</p>
+                </div>
+
+                <div class="steps-grid stagger" data-reveal>
+                    <article class="step-card">
+                        <span class="step-num">01</span>
+                        <h3>写真を撮って登録</h3>
+                        <p>着物や帯をスマホで撮影するだけ。カテゴリ・季節・色を設定して、あなただけのデジタルクローゼットに登録します。</p>
+                    </article>
+
+                    <article class="step-card">
+                        <span class="step-num">02</span>
+                        <h3>着せ替えてコーデを作る</h3>
+                        <p>登録したアイテムを画面上で重ねて、着物＋帯＋小物の組み合わせをシミュレーション。迷ったらAIにおまかせも。</p>
+                    </article>
+
+                    <article class="step-card">
+                        <span class="step-num">03</span>
+                        <h3>保存して記録する</h3>
+                        <p>お気に入りのコーデを保存。着た日や場所も日記として記録して、あなたの着物アルバムに残しましょう。</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider"><span></span></div>
+
+        <!-- ═══ SCREENS ═══ -->
+        <section class="section" id="screens">
+            <div class="wrap section-shell glass" data-reveal>
+                <div class="section-head">
+                    <h2 class="section-title">アプリの中をのぞいてみよう</h2>
+                    <p class="section-lead">実際のアプリ画面はこんな感じ。やわらかい和のデザインで、毎日開きたくなるアプリです。</p>
+                </div>
+
+                <div class="screens-grid stagger" data-reveal>
+                    <article class="screen-card">
+                        <div class="mini-phone">
+                            <div class="mini-phone-inner">
+                                <div class="mini-bar"><span>9:41</span><span>HOME</span></div>
+                                <div class="mini-hero-block">
+                                    <strong>今日の装い</strong>
+                                    <span>コーデとカレンダーを一覧</span>
+                                </div>
+                                <div class="mini-stack">
+                                    <div class="mini-grid-2">
+                                        <div class="mini-tile"></div>
+                                        <div class="mini-tile" style="background: rgba(45,74,110,0.14);"></div>
+                                    </div>
+                                    <div class="mini-block"><span>クイックアクション / 統計</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="screen-copy">
+                            <div class="label">ホーム画面</div>
+                            <h3>開くたびに「今日の一着」</h3>
+                            <p>最近のコーディネート、クローゼットの統計、着用カレンダーがひと目でわかるホーム画面。全国の着物店舗検索への導線もあります。</p>
+                            <ul>
+                                <li>クローゼット統計で手持ちアイテムを把握</li>
+                                <li>最近の日記・コーデをカード表示</li>
+                                <li>ワンタップで写真登録やコーデ作成へ</li>
+                            </ul>
+                        </div>
+                    </article>
+
+                    <article class="screen-card">
+                        <div class="mini-phone">
+                            <div class="mini-phone-inner">
+                                <div class="mini-bar"><span>9:41</span><span>ITEMS</span></div>
+                                <div class="mini-stack">
+                                    <div class="mini-block"><span>カテゴリ / 色 / 検索</span></div>
+                                    <div class="mini-grid-2">
+                                        <div class="mini-tile"></div>
+                                        <div class="mini-tile"></div>
+                                        <div class="mini-tile"></div>
+                                        <div class="mini-tile"></div>
+                                    </div>
+                                    <div class="mini-block"><span>着物・帯・小物を切り替え</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="screen-copy">
+                            <div class="label">アイテム一覧</div>
+                            <h3>あなただけの着物クローゼット</h3>
+                            <p>登録した着物・帯・小物を一覧で管理。カテゴリタブで素早く切り替え、検索やフィルターで「あの着物どこだっけ？」がなくなります。</p>
+                            <ul>
+                                <li>カテゴリタブ（着物・帯・帯揚げ・帯締め・その他）</li>
+                                <li>名前・種類・産地・タグで検索</li>
+                                <li>季節・色・格・素材でフィルター</li>
+                            </ul>
+                        </div>
+                    </article>
+
+                    <article class="screen-card">
+                        <div class="mini-phone">
+                            <div class="mini-phone-inner">
+                                <div class="mini-bar"><span>9:41</span><span>CREATE</span></div>
+                                <div class="mini-hero-block" style="background: linear-gradient(135deg, rgba(45,74,110,0.9), rgba(111,132,100,0.8));">
+                                    <strong>コーデ作成</strong>
+                                    <span>レイヤーで重ねて確認</span>
+                                </div>
+                                <div class="mini-stack">
+                                    <div class="mini-block"><span>着物 / 帯 / 帯揚げ / 帯締め / 半衿</span></div>
+                                    <div class="mini-block"><span>保存前に全体バランスを確認</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="screen-copy">
+                            <div class="label">コーデ作成</div>
+                            <h3>着る前に「着てみる」</h3>
+                            <p>着物や帯をレイヤーで重ねて、全身コーデを平置きシミュレーション。帯締めや帯揚げも加えて、じっくり検討できます。迷ったらAI提案ボタンでおまかせも。</p>
+                            <ul>
+                                <li>5つのレイヤーを自由に組み合わせ</li>
+                                <li>気に入ったコーデはそのまま保存</li>
+                                <li>AIコーデ提案への導線付き</li>
+                            </ul>
+                        </div>
+                    </article>
+
+                    <article class="screen-card">
+                        <div class="mini-phone">
+                            <div class="mini-phone-inner">
+                                <div class="mini-bar"><span>9:41</span><span>DIARY</span></div>
+                                <div class="mini-hero-block" style="min-height: 74px; background: linear-gradient(135deg, rgba(111,132,100,0.88), rgba(45,74,110,0.76));">
+                                    <strong>きもの日記</strong>
+                                    <span>いつ、どこで、何を着たか</span>
+                                </div>
+                                <div class="mini-stack">
+                                    <div class="mini-block"><span>日付 / 場所 / メモ / コーデ</span></div>
+                                    <div class="mini-block"><span>カレンダーで着用履歴を一覧</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="screen-copy">
+                            <div class="label">きもの日記</div>
+                            <h3>お出かけの思い出を記録</h3>
+                            <p>着た日、場所、メモをコーディネートと一緒に保存。写真も複数添付できます。タイムライン表示とカレンダー表示を切り替えて、着物との思い出を振り返りましょう。</p>
+                            <ul>
+                                <li>コーデと紐づけた着用記録</li>
+                                <li>写真を複数枚添付可能</li>
+                                <li>カレンダー・タイムライン切り替え</li>
+                            </ul>
+                        </div>
+                    </article>
+
+                    <article class="screen-card">
+                        <div class="mini-phone">
+                            <div class="mini-phone-inner">
+                                <div class="mini-bar"><span>9:41</span><span>STORE</span></div>
+                                <div class="mini-hero-block" style="background: linear-gradient(135deg, rgba(45,74,110,0.92), rgba(122,74,106,0.78));">
+                                    <strong>着物店検索</strong>
+                                    <span>全国の着物店を探す</span>
+                                </div>
+                                <div class="mini-stack">
+                                    <div class="mini-block"><span>地域タブ / キーワード検索</span></div>
+                                    <div class="mini-block"><span>店舗カード / マップ / 公式サイト</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="screen-copy">
+                            <div class="label">着物店検索</div>
+                            <h3>全国47都道府県の着物店を検索</h3>
+                            <p>北海道から沖縄まで、全国の着物店を地域別に検索できます。気になるお店はマップで場所を確認したり、公式サイトをチェックしたり。</p>
+                            <ul>
+                                <li>7つの地域タブで素早く絞り込み</li>
+                                <li>店名・住所でキーワード検索</li>
+                                <li>マップ表示・公式サイトへワンタップ</li>
+                            </ul>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider"><span></span></div>
+
+        <!-- ═══ FOR YOU ═══ -->
+        <section class="section" id="for-you">
+            <div class="wrap section-shell glass" data-reveal>
+                <div class="section-head">
+                    <h2 class="section-title">こんな方におすすめです</h2>
+                    <p class="section-lead">着物初心者の方から、たくさんの着物をお持ちの上級者の方まで。すべての着物好きに寄り添うアプリです。</p>
+                </div>
+
+                <div class="persona-grid stagger" data-reveal>
+                    <article class="persona-card">
+                        <p>手持ちの着物を、美しく整理・記録したい</p>
+                    </article>
+
+                    <article class="persona-card">
+                        <p>毎日のコーデ選びを、もっと心ゆくまで楽しみたい</p>
+                    </article>
+
+                    <article class="persona-card">
+                        <p>その日の気分にぴったりの組み合わせを見つけたい</p>
+                    </article>
+
+                    <article class="persona-card">
+                        <p>着物との大切な思い出を、形に残していきたい</p>
+                    </article>
+                </div>
+
+
+            </div>
+        </section>
+
+        <!-- ═══ CTA ═══ -->
+        <section class="cta" id="cta">
+            <div class="wrap">
+                <div class="cta-card glass" data-reveal>
+                    <div class="cta-content">
+                        <div class="cta-text">
+                            <h2>ダウンロードはこちら</h2>
+                            <div class="cta-actions">
+                                <a class="btn btn-white" href="#">App Storeからダウンロード</a>
+                                <a class="btn btn-outline" href="#">Google Playからダウンロード</a>
+                            </div>
+                        </div>
+                        <div class="cta-character" aria-hidden="true">
+                            <img src="character03.png" alt="" loading="lazy">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="wrap footer-inner">
+            <div class="footer-brand"><img src="kimono_illust.png" alt="">きもの日和</div>
+            <div class="footer-links">
+                <a href="#features">できること</a>
+                <a href="#howto">使い方</a>
+                <a href="#screens">画面</a>
+                <a href="#for-you">こんな方に</a>
+                <a href="privacy_policy.html">プライバシーポリシー</a>
+                <a href="mailto:info@minoribi.jp">お問い合わせ</a>
+            </div>
+            <div class="footer-copy">&copy; 2025 きもの日和</div>
+        </div>
+    </footer>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.12,
+            rootMargin: '0px 0px -40px 0px'
+        });
+
+        document.querySelectorAll('[data-reveal]').forEach((el) => observer.observe(el));
+
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    const header = document.querySelector('.site-header');
+                    if (header) header.classList.toggle('scrolled', window.scrollY > 20);
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>きもの日和 管理者パネル</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --indigo: #2D4A6E;
+  --indigo-dark: #1e3352;
+  --indigo-light: #4a6d9e;
+  --indigo-pale: #e8eef6;
+  --terracotta: #8B4513;
+  --sand: #E6DCC8;
+  --text: #1a1a2e;
+  --text-mid: #4a4a6a;
+  --text-light: #8888aa;
+  --bg: #f8f9fc;
+  --white: #ffffff;
+  --border: #e2e8f0;
+  --success: #2d6a4f;
+  --warning: #c17900;
+  --danger: #c0392b;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 16px rgba(45,74,110,0.12);
+  --radius: 12px;
+  --sidebar-width: 240px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ===== LOGIN ===== */
+#login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--indigo-dark) 0%, var(--indigo) 60%, var(--indigo-light) 100%);
+}
+
+.login-card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 48px 40px;
+  width: 380px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.login-logo {
+  width: 56px; height: 56px;
+  background: linear-gradient(135deg, var(--indigo), var(--indigo-light));
+  border-radius: 14px;
+  margin: 0 auto 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; color: white;
+}
+
+.login-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.login-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-light);
+  margin-bottom: 32px;
+  letter-spacing: 0.05em;
+}
+
+.btn-google {
+  width: 100%;
+  padding: 14px;
+  background: var(--indigo);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.btn-google:hover { background: var(--indigo-dark); transform: translateY(-1px); }
+
+.login-note {
+  margin-top: 20px;
+  font-size: 0.78rem;
+  color: var(--text-light);
+}
+
+/* ===== MAIN APP ===== */
+#app { display: none; min-height: 100vh; }
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--indigo-dark);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+}
+
+.sidebar-header {
+  padding: 24px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.sidebar-brand {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: white;
+  display: flex; align-items: center; gap: 10px;
+}
+
+.sidebar-brand-icon {
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+
+.sidebar-label {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.1em;
+  margin-top: 3px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 16px 12px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.65);
+  transition: all 0.2s;
+  margin-bottom: 2px;
+}
+
+.nav-item:hover { background: rgba(255,255,255,0.08); color: white; }
+.nav-item.active { background: rgba(255,255,255,0.15); color: white; font-weight: 500; }
+
+.nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+.sidebar-footer {
+  padding: 16px 12px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.user-info {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px;
+}
+
+.user-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: white;
+  overflow: hidden;
+}
+
+.user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.user-name {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.8);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-logout {
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  border-radius: 6px;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.78rem;
+  cursor: pointer;
+  font-family: 'Noto Sans JP', sans-serif;
+  transition: background 0.2s;
+}
+
+.btn-logout:hover { background: rgba(255,255,255,0.2); color: white; }
+
+/* ===== MAIN CONTENT ===== */
+.main {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  min-height: 100vh;
+}
+
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+}
+
+.page-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.content {
+  padding: 32px;
+}
+
+/* ===== TABS ===== */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.card-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-light);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--indigo);
+}
+
+.stat-label {
+  font-size: 0.78rem;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--indigo);
+  font-family: 'Noto Serif JP', serif;
+}
+
+.stat-unit {
+  font-size: 0.85rem;
+  color: var(--text-mid);
+  margin-left: 4px;
+}
+
+/* ===== TABLE ===== */
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  padding: 10px 16px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-light);
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg);
+}
+
+td {
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+tr:hover td { background: var(--indigo-pale); }
+
+/* ===== BADGE ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.badge-info { background: #e8f0fb; color: var(--indigo); }
+.badge-success { background: #e8f5ee; color: var(--success); }
+.badge-warning { background: #fef3e2; color: var(--warning); }
+.badge-danger { background: #fde8e8; color: var(--danger); }
+.badge-draft { background: #f0f0f0; color: #888; }
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.85rem;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary { background: var(--indigo); color: white; }
+.btn-primary:hover { background: var(--indigo-dark); }
+.btn-outline { background: transparent; color: var(--indigo); border: 1px solid var(--indigo); }
+.btn-outline:hover { background: var(--indigo-pale); }
+.btn-danger { background: var(--danger); color: white; }
+.btn-sm { padding: 5px 10px; font-size: 0.78rem; }
+
+/* ===== FORM ===== */
+.form-group { margin-bottom: 20px; }
+
+label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-mid);
+  margin-bottom: 6px;
+}
+
+input[type="text"], textarea, select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: 'Noto Sans JP', sans-serif;
+  color: var(--text);
+  background: var(--white);
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--indigo);
+  box-shadow: 0 0 0 3px rgba(45,74,110,0.08);
+}
+
+textarea { resize: vertical; min-height: 120px; }
+
+.char-count {
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+
+/* ===== TOGGLE ===== */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.toggle-row:last-child { border-bottom: none; }
+
+.toggle-label { font-size: 0.9rem; color: var(--text); }
+.toggle-desc { font-size: 0.78rem; color: var(--text-light); margin-top: 2px; }
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px; height: 24px;
+  flex-shrink: 0;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #ccc;
+  border-radius: 24px;
+  transition: 0.3s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px; width: 18px;
+  left: 3px; bottom: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+input:checked + .slider { background: var(--indigo); }
+input:checked + .slider:before { transform: translateX(20px); }
+
+/* ===== ANNOUNCEMENT CARDS ===== */
+.announcement-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.announcement-body { flex: 1; }
+.announcement-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+.announcement-preview { font-size: 0.82rem; color: var(--text-mid); margin-bottom: 8px; }
+.announcement-meta { font-size: 0.75rem; color: var(--text-light); }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 32px;
+  width: 560px;
+  max-width: 90vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-md);
+}
+
+.modal-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1.1rem;
+  margin-bottom: 24px;
+  color: var(--text);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+/* ===== CATEGORY CHIPS ===== */
+.chip-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.chip {
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 0.82rem;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--white);
+  color: var(--text-mid);
+}
+
+.chip.selected { background: var(--indigo); color: white; border-color: var(--indigo); }
+
+/* ===== SYSTEM INFO ===== */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.88rem;
+}
+
+.info-row:last-child { border-bottom: none; }
+.info-key { color: var(--text-light); }
+.info-val { color: var(--text); font-weight: 500; }
+
+/* ===== LOADING ===== */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-light);
+  font-size: 0.88rem;
+}
+
+.spinner {
+  width: 24px; height: 24px;
+  border: 2px solid var(--border);
+  border-top-color: var(--indigo);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 12px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== ACCESS DENIED ===== */
+#access-denied {
+  display: none;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  text-align: center;
+}
+
+.denied-icon { font-size: 3rem; }
+.denied-title { font-size: 1.2rem; font-weight: 700; color: var(--danger); }
+.denied-sub { font-size: 0.88rem; color: var(--text-light); }
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .content { padding: 16px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">👘</div>
+    <div class="login-title">きもの日和</div>
+    <div class="login-subtitle">管理者パネル</div>
+    <button class="btn-google" onclick="signInWithGoogle()">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Googleでログイン
+    </button>
+    <p class="login-note">管理者アカウントのみアクセスできます</p>
+  </div>
+</div>
+
+<!-- ===== ACCESS DENIED ===== -->
+<div id="access-denied" style="display:none; min-height:100vh; align-items:center; justify-content:center; flex-direction:column; gap:16px; text-align:center;">
+  <div style="font-size:3rem;">🚫</div>
+  <div style="font-size:1.2rem; font-weight:700; color:var(--danger);">アクセス権限がありません</div>
+  <div style="font-size:0.88rem; color:var(--text-light);">このアカウントには管理者権限がありません</div>
+  <button class="btn btn-outline" onclick="signOut()">別のアカウントでログイン</button>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="app">
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <div class="sidebar-brand-icon">👘</div>
+          <div>
+            <div>きもの日和</div>
+            <div class="sidebar-label">ADMIN PANEL</div>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-item active" onclick="switchTab('dashboard', this)">
+          <span class="nav-icon">📊</span> ダッシュボード
+        </div>
+        <div class="nav-item" onclick="switchTab('users', this)">
+          <span class="nav-icon">👥</span> ユーザー管理
+        </div>
+        <div class="nav-item" onclick="switchTab('announcements', this)">
+          <span class="nav-icon">📢</span> お知らせ管理
+        </div>
+        <div class="nav-item" onclick="switchTab('settings', this)">
+          <span class="nav-icon">⚙️</span> アプリ設定
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="user-avatar">👤</div>
+          <div class="user-name" id="user-name">読み込み中...</div>
+          <button class="btn-logout" onclick="signOut()">ログアウト</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="topbar">
+        <div class="page-title" id="page-title">ダッシュボード</div>
+        <div id="topbar-action"></div>
+      </div>
+
+      <div class="content">
+
+        <!-- ① DASHBOARD -->
+        <div id="tab-dashboard" class="tab-content active">
+          <div class="stats-grid" id="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">総ユーザー数</div>
+              <div class="stat-value" id="stat-users">-<span class="stat-unit">人</span></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">最近のユーザー</div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>名前</th>
+                    <th>UID</th>
+                    <th>ステータス</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-users-table">
+                  <tr><td colspan="3"><div class="loading"><div class="spinner"></div>読み込み中...</div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">システム情報</div>
+            <div class="info-row"><span class="info-key">アプリバージョン</span><span class="info-val">1.0.0</span></div>
+            <div class="info-row"><span class="info-key">Firebase プロジェクト</span><span class="info-val">kimono-hiyori</span></div>
+            <div class="info-row"><span class="info-key">最終更新</span><span class="info-val" id="last-updated">-</span></div>
+          </div>
+        </div>
+
+        <!-- ② USERS -->
+        <div id="tab-users" class="tab-content">
+          <div class="card">
+            <div style="display:flex; gap:12px; margin-bottom:16px;">
+              <input type="text" id="user-search" placeholder="名前・UIDで検索..." style="flex:1;" oninput="filterUsers()">
+              <button class="btn btn-outline btn-sm" onclick="loadUsers()">更新</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>名前</th>
+                    <th>UID</th>
+                    <th>ステータス</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="users-table">
+                  <tr><td colspan="4"><div class="loading"><div class="spinner"></div>読み込み中...</div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ③ ANNOUNCEMENTS -->
+        <div id="tab-announcements" class="tab-content">
+          <div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
+            <button class="btn btn-primary" onclick="openAnnouncementEditor()">＋ 新規作成</button>
+          </div>
+          <div id="announcements-list">
+            <div class="loading"><div class="spinner"></div>読み込み中...</div>
+          </div>
+        </div>
+
+        <!-- ④ SETTINGS -->
+        <div id="tab-settings" class="tab-content">
+          <div class="card">
+            <div class="card-title">運用設定</div>
+            <div class="toggle-row">
+              <div>
+                <div class="toggle-label">メンテナンスモード</div>
+                <div class="toggle-desc">ONにするとユーザーにメンテナンス画面が表示されます</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="setting-maintenance" onchange="confirmMaintenance(this)">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="toggle-row">
+              <div>
+                <div class="toggle-label">最低対応バージョン</div>
+              </div>
+              <input type="text" id="setting-min-version" value="1.0.0" style="width:120px;">
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">機能フラグ</div>
+            <div class="toggle-row">
+              <div>
+                <div class="toggle-label">AI提案機能</div>
+                <div class="toggle-desc">コーデのAI提案機能の有効/無効</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="setting-ai" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="toggle-row">
+              <div>
+                <div class="toggle-label">日記機能</div>
+                <div class="toggle-desc">着物日記機能の有効/無効</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="setting-diary" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">制限設定</div>
+            <div class="form-group">
+              <label>アイテム上限数（1ユーザーあたり）</label>
+              <input type="text" id="setting-max-items" value="500">
+            </div>
+            <div class="form-group">
+              <label>コーデ上限数（1ユーザーあたり）</label>
+              <input type="text" id="setting-max-coords" value="200">
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">リンク設定</div>
+            <div class="form-group">
+              <label>プライバシーポリシー URL</label>
+              <input type="text" id="setting-privacy-url" placeholder="https://...">
+            </div>
+            <div class="form-group">
+              <label>利用規約 URL</label>
+              <input type="text" id="setting-terms-url" placeholder="https://...">
+            </div>
+          </div>
+
+          <div style="text-align:right;">
+            <button class="btn btn-primary" onclick="saveSettings()">設定を保存</button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ===== ANNOUNCEMENT MODAL ===== -->
+<div class="modal-overlay" id="announcement-modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">お知らせを作成</div>
+    <input type="hidden" id="announcement-id">
+
+    <div class="form-group">
+      <label>カテゴリ</label>
+      <div class="chip-group">
+        <div class="chip selected" data-cat="info" onclick="selectCategory(this)">お知らせ</div>
+        <div class="chip" data-cat="maintenance" onclick="selectCategory(this)">メンテナンス</div>
+        <div class="chip" data-cat="update" onclick="selectCategory(this)">アップデート</div>
+        <div class="chip" data-cat="campaign" onclick="selectCategory(this)">キャンペーン</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>タイトル（最大100文字）</label>
+      <input type="text" id="announcement-title" maxlength="100" oninput="updateCharCount('announcement-title','title-count',100)">
+      <div class="char-count"><span id="title-count">0</span>/100</div>
+    </div>
+
+    <div class="form-group">
+      <label>本文（最大2,000文字）</label>
+      <textarea id="announcement-body" rows="8" maxlength="2000" oninput="updateCharCount('announcement-body','body-count',2000)"></textarea>
+      <div class="char-count"><span id="body-count">0</span>/2,000</div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveAnnouncement()">保存する</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CONFIRM MODAL ===== -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-title" id="confirm-title">確認</div>
+    <p id="confirm-message" style="font-size:0.9rem; color:var(--text-mid); line-height:1.7;"></p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeConfirm(false)">キャンセル</button>
+      <button class="btn btn-danger" id="confirm-ok" onclick="closeConfirm(true)">実行する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc,
+  deleteDoc, query, orderBy, limit, onSnapshot, serverTimestamp }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA_f4sL7ktyCBbmJhM9yzSnF6yjKj_dpws",
+  authDomain: "kimono-hiyori.firebaseapp.com",
+  projectId: "kimono-hiyori",
+  storageBucket: "kimono-hiyori.firebasestorage.app",
+  messagingSenderId: "1072239594336",
+  appId: "1:1072239594336:web:d2c93536904559e83b6c05",
+  measurementId: "G-5FHNXXPWR7"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let allUsers = [];
+let confirmCallback = null;
+let unsubAnnouncements = null;
+
+// ===== AUTH =====
+window.signInWithGoogle = async () => {
+  const provider = new GoogleAuthProvider();
+  try { await signInWithPopup(auth, provider); }
+  catch(e) { alert('ログインに失敗しました: ' + e.message); }
+};
+
+window.signOut = async () => {
+  if (unsubAnnouncements) unsubAnnouncements();
+  await fbSignOut(auth);
+};
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    show('login-screen');
+    return;
+  }
+  // 管理者チェック
+  const adminDoc = await getDoc(doc(db, 'admin_config', 'admins'));
+  const uids = adminDoc.exists() ? (adminDoc.data().uids || []) : [];
+  if (!uids.includes(user.uid)) {
+    show('access-denied');
+    return;
+  }
+  // 管理者として表示
+  document.getElementById('user-name').textContent = user.displayName || user.email;
+  const avatarEl = document.getElementById('user-avatar');
+  if (user.photoURL) {
+    avatarEl.innerHTML = `<img src="${user.photoURL}" alt="">`;
+  }
+  document.getElementById('last-updated').textContent = new Date().toLocaleString('ja-JP');
+  show('app');
+  loadDashboard();
+  loadUsers();
+  loadAnnouncements();
+  loadSettings();
+});
+
+function show(id) {
+  ['login-screen','access-denied','app'].forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.style.display = s === id ? (id === 'app' ? 'block' : 'flex') : 'none';
+  });
+}
+
+// ===== TABS =====
+window.switchTab = (tab, el) => {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  el.classList.add('active');
+  const titles = {dashboard:'ダッシュボード', users:'ユーザー管理', announcements:'お知らせ管理', settings:'アプリ設定'};
+  document.getElementById('page-title').textContent = titles[tab] || '';
+};
+
+// ===== DASHBOARD =====
+async function loadDashboard() {
+  try {
+    const snap = await getDocs(collection(db, 'users'));
+    document.getElementById('stat-users').innerHTML = snap.size + '<span class="stat-unit">人</span>';
+  } catch(e) {
+    document.getElementById('stat-users').textContent = '-';
+  }
+}
+
+// ===== USERS =====
+window.loadUsers = async () => {
+  const tbody = document.getElementById('users-table');
+  const tbody2 = document.getElementById('recent-users-table');
+  tbody.innerHTML = '<tr><td colspan="4"><div class="loading"><div class="spinner"></div>読み込み中...</div></td></tr>';
+  try {
+    const snap = await getDocs(collection(db, 'users'));
+    allUsers = [];
+    snap.forEach(d => allUsers.push({id: d.id, ...d.data()}));
+    renderUsers(allUsers);
+    // recent
+    const recent = allUsers.slice(0, 5);
+    tbody2.innerHTML = recent.map(u => `
+      <tr>
+        <td>${u.displayName || '（名前なし）'}</td>
+        <td style="font-size:0.75rem; color:var(--text-light); font-family:monospace;">${u.id.substring(0,16)}...</td>
+        <td>${u.disabled ? '<span class="badge badge-danger">無効</span>' : '<span class="badge badge-success">有効</span>'}</td>
+      </tr>`).join('') || '<tr><td colspan="3">ユーザーなし</td></tr>';
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger);">読み込み失敗: ${e.message}</td></tr>`;
+  }
+};
+
+function renderUsers(users) {
+  const tbody = document.getElementById('users-table');
+  tbody.innerHTML = users.map(u => `
+    <tr>
+      <td>${u.displayName || '（名前なし）'}</td>
+      <td style="font-size:0.75rem; color:var(--text-light); font-family:monospace;">${u.id.substring(0,20)}...</td>
+      <td>${u.disabled ? '<span class="badge badge-danger">無効</span>' : '<span class="badge badge-success">有効</span>'}</td>
+      <td>
+        <button class="btn btn-sm ${u.disabled ? 'btn-outline' : 'btn-danger'}"
+          onclick="toggleUserDisabled('${u.id}', ${!u.disabled}, '${u.displayName || 'このユーザー'}')">
+          ${u.disabled ? '有効化' : '無効化'}
+        </button>
+      </td>
+    </tr>`).join('') || '<tr><td colspan="4">ユーザーなし</td></tr>';
+}
+
+window.filterUsers = () => {
+  const q = document.getElementById('user-search').value.toLowerCase();
+  renderUsers(allUsers.filter(u =>
+    (u.displayName || '').toLowerCase().includes(q) || u.id.toLowerCase().includes(q)
+  ));
+};
+
+window.toggleUserDisabled = (uid, disabled, name) => {
+  showConfirm(
+    `${name}を${disabled ? '無効化' : '有効化'}しますか？`,
+    `このユーザーのアカウントを${disabled ? '無効化（ログイン不可）' : '有効化（ログイン可能）'}します。`,
+    async () => {
+      await updateDoc(doc(db, 'users', uid), { disabled, disabledAt: disabled ? serverTimestamp() : null });
+      loadUsers();
+    }
+  );
+};
+
+// ===== ANNOUNCEMENTS =====
+const catLabels = {info:'お知らせ', maintenance:'メンテナンス', update:'アップデート', campaign:'キャンペーン'};
+const catColors = {info:'badge-info', maintenance:'badge-warning', update:'badge-success', campaign:'badge-danger'};
+
+function loadAnnouncements() {
+  if (unsubAnnouncements) unsubAnnouncements();
+  const q = query(collection(db, 'announcements'), orderBy('createdAt', 'desc'));
+  unsubAnnouncements = onSnapshot(q, snap => {
+    const list = document.getElementById('announcements-list');
+    if (snap.empty) { list.innerHTML = '<div class="loading">お知らせがありません</div>'; return; }
+    list.innerHTML = snap.docs.map(d => {
+      const a = d.data();
+      return `<div class="announcement-card">
+        <div class="announcement-body">
+          <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+            <span class="badge ${catColors[a.category] || 'badge-info'}">${catLabels[a.category] || a.category}</span>
+            <span class="badge ${a.isPublished ? 'badge-success' : 'badge-draft'}">${a.isPublished ? '公開中' : '下書き'}</span>
+          </div>
+          <div class="announcement-title">${a.title}</div>
+          <div class="announcement-preview">${(a.body||'').substring(0,80)}${a.body?.length > 80 ? '...' : ''}</div>
+          <div class="announcement-meta">作成: ${a.createdAt?.toDate().toLocaleDateString('ja-JP') || '-'}</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:6px; flex-shrink:0;">
+          <button class="btn btn-outline btn-sm" onclick='editAnnouncement(${JSON.stringify({id:d.id,...a})})'>編集</button>
+          <button class="btn btn-sm ${a.isPublished ? 'btn-outline' : 'btn-primary'}"
+            onclick="togglePublish('${d.id}', ${!a.isPublished})">
+            ${a.isPublished ? '非公開' : '公開'}
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="deleteAnnouncement('${d.id}', '${a.title}')">削除</button>
+        </div>
+      </div>`;
+    }).join('');
+  }, e => {
+    document.getElementById('announcements-list').innerHTML = `<div style="color:var(--danger)">読み込み失敗: ${e.message}</div>`;
+  });
+}
+
+window.openAnnouncementEditor = () => {
+  document.getElementById('announcement-id').value = '';
+  document.getElementById('announcement-title').value = '';
+  document.getElementById('announcement-body').value = '';
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  document.querySelector('.chip[data-cat="info"]').classList.add('selected');
+  document.getElementById('title-count').textContent = '0';
+  document.getElementById('body-count').textContent = '0';
+  document.getElementById('modal-title').textContent = 'お知らせを作成';
+  document.getElementById('announcement-modal').classList.add('open');
+};
+
+window.editAnnouncement = (a) => {
+  document.getElementById('announcement-id').value = a.id;
+  document.getElementById('announcement-title').value = a.title;
+  document.getElementById('announcement-body').value = a.body;
+  document.querySelectorAll('.chip').forEach(c => {
+    c.classList.toggle('selected', c.dataset.cat === a.category);
+  });
+  document.getElementById('title-count').textContent = (a.title||'').length;
+  document.getElementById('body-count').textContent = (a.body||'').length;
+  document.getElementById('modal-title').textContent = 'お知らせを編集';
+  document.getElementById('announcement-modal').classList.add('open');
+};
+
+window.closeModal = () => document.getElementById('announcement-modal').classList.remove('open');
+
+window.saveAnnouncement = async () => {
+  const id = document.getElementById('announcement-id').value;
+  const title = document.getElementById('announcement-title').value.trim();
+  const body = document.getElementById('announcement-body').value.trim();
+  const category = document.querySelector('.chip.selected')?.dataset.cat || 'info';
+  if (!title) { alert('タイトルを入力してください'); return; }
+  if (!body) { alert('本文を入力してください'); return; }
+  try {
+    if (id) {
+      await updateDoc(doc(db, 'announcements', id), {title, body, category});
+    } else {
+      await addDoc(collection(db, 'announcements'), {
+        title, body, category, isPublished: false, createdAt: serverTimestamp()
+      });
+    }
+    closeModal();
+  } catch(e) { alert('保存失敗: ' + e.message); }
+};
+
+window.togglePublish = async (id, isPublished) => {
+  await updateDoc(doc(db, 'announcements', id), {
+    isPublished, publishedAt: isPublished ? serverTimestamp() : null
+  });
+};
+
+window.deleteAnnouncement = (id, title) => {
+  showConfirm('お知らせを削除しますか？', `「${title}」を削除します。この操作は元に戻せません。`, async () => {
+    await deleteDoc(doc(db, 'announcements', id));
+  });
+};
+
+// ===== SETTINGS =====
+async function loadSettings() {
+  try {
+    const snap = await getDoc(doc(db, 'admin_config', 'settings'));
+    if (snap.exists()) {
+      const s = snap.data();
+      document.getElementById('setting-maintenance').checked = s.maintenanceMode || false;
+      document.getElementById('setting-min-version').value = s.minAppVersion || '1.0.0';
+      document.getElementById('setting-ai').checked = s.enableAiSuggestion !== false;
+      document.getElementById('setting-diary').checked = s.enableDiary !== false;
+      document.getElementById('setting-max-items').value = s.maxItemsPerUser || 500;
+      document.getElementById('setting-max-coords').value = s.maxCoordinatesPerUser || 200;
+      document.getElementById('setting-privacy-url').value = s.privacyPolicyUrl || '';
+      document.getElementById('setting-terms-url').value = s.termsOfServiceUrl || '';
+    }
+  } catch(e) { console.log('設定読み込みエラー:', e); }
+}
+
+window.saveSettings = async () => {
+  try {
+    await setDoc(doc(db, 'admin_config', 'settings'), {
+      maintenanceMode: document.getElementById('setting-maintenance').checked,
+      minAppVersion: document.getElementById('setting-min-version').value,
+      enableAiSuggestion: document.getElementById('setting-ai').checked,
+      enableDiary: document.getElementById('setting-diary').checked,
+      maxItemsPerUser: parseInt(document.getElementById('setting-max-items').value) || 500,
+      maxCoordinatesPerUser: parseInt(document.getElementById('setting-max-coords').value) || 200,
+      privacyPolicyUrl: document.getElementById('setting-privacy-url').value,
+      termsOfServiceUrl: document.getElementById('setting-terms-url').value,
+      updatedAt: serverTimestamp()
+    });
+    alert('設定を保存しました');
+  } catch(e) { alert('保存失敗: ' + e.message); }
+};
+
+window.confirmMaintenance = (checkbox) => {
+  if (checkbox.checked) {
+    showConfirm('メンテナンスモードをONにしますか？',
+      'ONにするとすべてのユーザーにメンテナンス画面が表示されます。',
+      () => {}, () => { checkbox.checked = false; }
+    );
+  }
+};
+
+// ===== UTILS =====
+window.selectCategory = (el) => {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+};
+
+window.updateCharCount = (inputId, countId, max) => {
+  const len = document.getElementById(inputId).value.length;
+  document.getElementById(countId).textContent = len;
+};
+
+function showConfirm(title, message, onOk, onCancel) {
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-message').textContent = message;
+  document.getElementById('confirm-modal').classList.add('open');
+  confirmCallback = {onOk, onCancel};
+}
+
+window.closeConfirm = (confirmed) => {
+  document.getElementById('confirm-modal').classList.remove('open');
+  if (confirmed && confirmCallback?.onOk) confirmCallback.onOk();
+  if (!confirmed && confirmCallback?.onCancel) confirmCallback.onCancel();
+  confirmCallback = null;
+};
+
+</script>
+</body>
+</html>
