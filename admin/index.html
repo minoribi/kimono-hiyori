@@ -797,6 +797,35 @@ input:checked + .slider:before { transform: translateX(20px); }
             </div>
           </div>
 
+          <div class="card">
+            <div class="card-title">バナー管理（今日のおすすめ）</div>
+            <div class="toggle-row">
+              <div>
+                <div class="toggle-label">バナーを表示する</div>
+                <div class="toggle-desc">ONにするとホーム画面にバナーが表示されます</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="banner-visible">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="form-group">
+              <label>バナー画像 URL</label>
+              <input type="text" id="banner-image-url" placeholder="https://..." oninput="updateBannerPreview(this.value)">
+            </div>
+            <div id="banner-preview-wrap" style="display:none; margin-bottom:16px;">
+              <img id="banner-preview-img" src="" alt="バナープレビュー"
+                style="width:100%; max-height:120px; object-fit:cover; border-radius:8px; border:1px solid var(--border);">
+            </div>
+            <div class="form-group">
+              <label>タップ時リンク URL</label>
+              <input type="text" id="banner-link-url" placeholder="https://...">
+            </div>
+            <div style="text-align:right;">
+              <button class="btn btn-primary" onclick="saveBanner()">バナーを保存</button>
+            </div>
+          </div>
+
           <div style="text-align:right;">
             <button class="btn btn-primary" onclick="saveSettings()">設定を保存</button>
           </div>
@@ -1114,7 +1143,45 @@ async function loadSettings() {
       document.getElementById('setting-terms-url').value = s.termsOfServiceUrl || '';
     }
   } catch(e) { console.log('設定読み込みエラー:', e); }
+  loadBanner();
 }
+
+// ===== BANNER =====
+function updateBannerPreview(url) {
+  const wrap = document.getElementById('banner-preview-wrap');
+  const img = document.getElementById('banner-preview-img');
+  if (url && url.trim()) {
+    img.src = url.trim();
+    wrap.style.display = 'block';
+  } else {
+    wrap.style.display = 'none';
+  }
+}
+
+async function loadBanner() {
+  try {
+    const snap = await getDoc(doc(db, 'admin_config', 'banner'));
+    if (snap.exists()) {
+      const b = snap.data();
+      document.getElementById('banner-visible').checked = b.isVisible || false;
+      document.getElementById('banner-image-url').value = b.imageUrl || '';
+      document.getElementById('banner-link-url').value = b.linkUrl || '';
+      updateBannerPreview(b.imageUrl);
+    }
+  } catch(e) { console.log('バナー読み込みエラー:', e); }
+}
+
+window.saveBanner = async () => {
+  try {
+    await setDoc(doc(db, 'admin_config', 'banner'), {
+      isVisible: document.getElementById('banner-visible').checked,
+      imageUrl: document.getElementById('banner-image-url').value,
+      linkUrl: document.getElementById('banner-link-url').value,
+      updatedAt: serverTimestamp()
+    });
+    alert('バナーを保存しました');
+  } catch(e) { alert('保存失敗: ' + e.message); }
+};
 
 window.saveSettings = async () => {
   try {
