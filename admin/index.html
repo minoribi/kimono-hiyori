@@ -821,6 +821,10 @@ input:checked + .slider:before { transform: translateX(20px); }
               <label>タップ時リンク URL</label>
               <input type="text" id="banner-link-url" placeholder="https://...">
             </div>
+            <div class="form-group">
+              <label>テキスト（説明文）</label>
+              <textarea id="banner-description" rows="3" placeholder="バナーの説明文を入力（任意）" style="width:100%; box-sizing:border-box; resize:vertical;"></textarea>
+            </div>
             <div style="text-align:right;">
               <button class="btn btn-primary" onclick="saveBanner()">バナーを保存</button>
             </div>
@@ -1166,6 +1170,7 @@ async function loadBanner() {
       document.getElementById('banner-visible').checked = b.isVisible || false;
       document.getElementById('banner-image-url').value = b.imageUrl || '';
       document.getElementById('banner-link-url').value = b.linkUrl || '';
+      document.getElementById('banner-description').value = b.description || '';
       updateBannerPreview(b.imageUrl);
     }
   } catch(e) { console.log('バナー読み込みエラー:', e); }
@@ -1177,6 +1182,7 @@ window.saveBanner = async () => {
       isVisible: document.getElementById('banner-visible').checked,
       imageUrl: document.getElementById('banner-image-url').value,
       linkUrl: document.getElementById('banner-link-url').value,
+      description: document.getElementById('banner-description').value,
       updatedAt: serverTimestamp()
     });
     alert('バナーを保存しました');
