@@ -305,25 +305,36 @@
 
     /* ── Footer ──────────────── */
     footer {
-      background: var(--amber);
+      background: #5d3a22;
       color: rgba(255,255,255,.85);
       text-align: center;
-      padding: 28px 20px;
-      font-size: 12px;
-      line-height: 1.8;
+      padding: 40px 28px 32px;
     }
-    footer a {
-      color: rgba(255,255,255,.7);
-      text-decoration: underline;
-      margin: 0 8px;
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
     }
-    footer a:hover { color: white; }
+    .footer-links a {
+      font-size: .75rem;
+      color: rgba(255,255,255,.5);
+      text-decoration: none;
+      transition: color .3s;
+    }
+    .footer-links a:hover { color: rgba(255,255,255,.8); }
+    .footer-links span {
+      font-size: .75rem;
+      color: rgba(255,255,255,.5);
+    }
     .footer-logo {
       font-family: 'Shippori Mincho', serif;
-      font-size: 16px;
+      font-size: 1.4rem;
       font-weight: 700;
-      color: white;
-      margin-bottom: 8px;
+      color: rgba(255,255,255,.8);
+      margin-bottom: 16px;
+      letter-spacing: .06em;
     }
 
     /* ── Responsive ──────────── */
@@ -392,11 +403,11 @@
 <!-- ── Footer ── -->
 <footer>
   <div class="footer-logo">きもの日和</div>
-  <div>
-    <a href="https://minoribi.github.io/kimono-hiyori/">アプリについて</a>
+  <div class="footer-links">
+    <a href="https://minoribi.github.io/kimono-hiyori/">アプリTOPへ</a>
     <a href="https://minoribi.github.io/kimono-hiyori/privacy_policy.html">プライバシーポリシー</a>
+    <span>© きもの日和 / みのりび合同会社</span>
   </div>
-  <p style="margin-top:8px;">© きもの日和 / みのりび合同会社</p>
 </footer>
 
 <script>
