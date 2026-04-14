@@ -37,7 +37,7 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(253,251,247,.95);
+      background: rgba(252,249,240,.95);
       backdrop-filter: blur(16px);
       box-shadow: 0 1px 0 rgba(108,47,0,.08);
       padding: 0 28px;
@@ -306,9 +306,58 @@
     /* ── Footer ──────────────── */
     footer {
       background: #5d3a22;
-      color: rgba(255,255,255,.85);
+      padding: 60px 28px 32px;
       text-align: center;
-      padding: 40px 28px 32px;
+    }
+    .cta-title {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 18px;
+    }
+    .cta-description {
+      font-size: 1rem;
+      line-height: 1.9;
+      color: white;
+      margin-bottom: 36px;
+    }
+    .store-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
+    .btn-store {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: #000000;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: opacity .2s;
+      min-width: 200px;
+    }
+    .btn-store:hover { opacity: .85; }
+    .btn-store-icon {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+    .btn-store-text { text-align: left; line-height: 1.3; }
+    .btn-store-small {
+      display: block;
+      font-size: .65rem;
+      color: rgba(255,255,255,.75);
+      font-weight: 400;
+    }
+    .btn-store-big {
+      display: block;
+      font-size: 1rem;
+      font-weight: 600;
     }
     .footer-links {
       display: flex;
@@ -327,14 +376,6 @@
     .footer-links span {
       font-size: .75rem;
       color: rgba(255,255,255,.5);
-    }
-    .footer-logo {
-      font-family: 'Shippori Mincho', serif;
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: rgba(255,255,255,.8);
-      margin-bottom: 16px;
-      letter-spacing: .06em;
     }
 
     /* ── Responsive ──────────── */
@@ -402,11 +443,37 @@
 
 <!-- ── Footer ── -->
 <footer>
-  <div class="footer-logo">きもの日和</div>
+  <h2 class="cta-title">きもの日和を、はじめましょう。</h2>
+  <p class="cta-description">
+    あなたの着物ライフがもっと楽しく、もっと自由に。<br>
+    まずは手持ちの一着から、登録してみませんか？
+  </p>
+  <div class="store-buttons">
+    <a href="#" class="btn-store">
+      <svg class="btn-store-icon" viewBox="0 0 24 24" fill="white">
+        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+      </svg>
+      <span class="btn-store-text">
+        <span class="btn-store-small">iPhoneの方はこちら</span>
+        <span class="btn-store-big">App Storeで入手</span>
+      </span>
+    </a>
+    <a href="#" class="btn-store">
+      <svg class="btn-store-icon" viewBox="0 0 24 24">
+        <path d="M3.18 23.79c.31.17.65.21 1.004.13L16.65 12 12.46 7.81 3.18 23.79z" fill="#EA4335"/>
+        <path d="M20.47 10.22L17.3 8.37l-4.25 3.78 4.25 3.78 3.22-1.85c.92-.53.92-1.85-.05-2.86z" fill="#FBBC05"/>
+        <path d="M4.18 .08C3.83.0 3.5.16 3.18.34L12.46 9.62l4.19-4.19L4.18.08z" fill="#4285F4"/>
+        <path d="M3.18.34C2.73.6 2.5 1.1 2.5 1.73v20.54c0 .63.23 1.13.68 1.39l.05.02L12.97 12 3.23.32l-.05.02z" fill="#34A853"/>
+      </svg>
+      <span class="btn-store-text">
+        <span class="btn-store-small">Androidの方はこちら</span>
+        <span class="btn-store-big">Google Playで入手</span>
+      </span>
+    </a>
+  </div>
   <div class="footer-links">
-    <a href="https://minoribi.github.io/kimono-hiyori/">アプリTOPへ</a>
     <a href="https://minoribi.github.io/kimono-hiyori/privacy_policy.html">プライバシーポリシー</a>
-    <span>© きもの日和 / みのりび合同会社</span>
+    <span>© きもの日和</span>
   </div>
 </footer>
 
