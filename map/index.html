@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>全国着物店舗マップ | きもの日和</title>
+  <meta name="description" content="全国47都道府県の着物・呉服店舗情報。きもの日和がお届けする店舗マップ。">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;600&family=Shippori+Mincho:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --washi:       #FDFBF7;
+      --washi-dark:  #F5EFE0;
+      --washi-mid:   #EFE7D0;
+      --amber:       #6C2F00;
+      --amber-light: #B07040;
+      --gold:        #F0D878;
+      --text-dark:   #1A1008;
+      --text-mid:    #5C4030;
+      --text-light:  #9C7B5E;
+      --divider:     rgba(108,47,0,.12);
+      --radius:      12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--washi);
+      color: var(--text-dark);
+      min-height: 100vh;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Nav ─────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--washi);
+      border-bottom: 1px solid var(--divider);
+      padding: 0 20px;
+    }
+    .nav-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--amber);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-logo-icon {
+      width: 24px;
+      height: 24px;
+      background: var(--amber);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 13px;
+    }
+    .nav-back {
+      font-size: 13px;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .nav-back:hover { color: var(--amber); }
+
+    /* ── Hero ────────────────── */
+    .hero {
+      background: linear-gradient(135deg, var(--amber) 0%, #A05030 100%);
+      color: white;
+      padding: 40px 20px 36px;
+      text-align: center;
+    }
+    .hero-label {
+      font-size: 11px;
+      letter-spacing: 2px;
+      opacity: .75;
+      margin-bottom: 10px;
+    }
+    .hero h1 {
+      font-family: 'Noto Serif JP', serif;
+      font-size: clamp(22px, 5vw, 30px);
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+    .hero p {
+      font-size: 13px;
+      opacity: .8;
+      line-height: 1.7;
+    }
+    .hero-count {
+      display: inline-block;
+      margin-top: 14px;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+    }
+    .hero-count span {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0 3px;
+    }
+
+    /* ── Search ──────────────── */
+    .search-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px 20px 0;
+    }
+    .search-box {
+      position: relative;
+    }
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+      font-size: 16px;
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      padding: 11px 40px 11px 40px;
+      border: 1px solid var(--divider);
+      border-radius: var(--radius);
+      background: white;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 14px;
+      color: var(--text-dark);
+      outline: none;
+      transition: border-color .2s;
+    }
+    .search-input:focus { border-color: var(--amber); }
+    .search-input::placeholder { color: var(--text-light); }
+    .search-clear {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-light);
+      font-size: 16px;
+      display: none;
+      padding: 4px;
+    }
+    .search-clear.visible { display: block; }
+
+    /* ── Region Tabs ─────────── */
+    .tabs-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 16px 20px 0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .tabs-wrap::-webkit-scrollbar { display: none; }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      width: max-content;
+    }
+    .tab {
+      padding: 7px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      border: none;
+      background: var(--washi-mid);
+      color: var(--text-mid);
+      transition: background .18s, color .18s;
+      font-family: 'Noto Sans JP', sans-serif;
+    }
+    .tab.active {
+      background: var(--amber);
+      color: white;
+      font-weight: 600;
+    }
+    .tab:hover:not(.active) { background: var(--washi-dark); }
+
+    /* ── Store List ──────────── */
+    .list-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px 20px 60px;
+    }
+
+    /* 検索結果カウント */
+    .result-count {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-bottom: 16px;
+    }
+    .result-count strong {
+      color: var(--amber);
+      font-size: 16px;
+    }
+
+    /* 都道府県ヘッダー */
+    .pref-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0 8px;
+      margin-top: 24px;
+      border-bottom: 2px solid var(--amber);
+    }
+    .pref-header:first-child { margin-top: 0; }
+    .pref-name {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--amber);
+    }
+    .pref-badge {
+      font-size: 11px;
+      color: var(--text-light);
+    }
+
+    /* 店舗カード */
+    .store-card {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--divider);
+    }
+    .store-info { flex: 1; min-width: 0; }
+    .store-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    .store-address {
+      font-size: 12px;
+      color: var(--text-mid);
+      line-height: 1.6;
+      display: flex;
+      align-items: flex-start;
+      gap: 4px;
+    }
+    .store-address-icon { flex-shrink: 0; margin-top: 2px; }
+    .store-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .store-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: 'Noto Sans JP', sans-serif;
+      cursor: pointer;
+      white-space: nowrap;
+      border: 1px solid rgba(108,47,0,.4);
+      color: var(--amber);
+      background: white;
+      transition: background .15s;
+      text-decoration: none;
+    }
+    .store-btn:hover { background: var(--washi-dark); }
+    .store-btn svg { flex-shrink: 0; }
+
+    /* 空状態 */
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-light);
+    }
+    .empty-icon { font-size: 40px; margin-bottom: 12px; }
+    .empty p { font-size: 14px; line-height: 1.7; }
+
+    /* ── Footer ──────────────── */
+    footer {
+      background: var(--amber);
+      color: rgba(255,255,255,.85);
+      text-align: center;
+      padding: 28px 20px;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+    footer a {
+      color: rgba(255,255,255,.7);
+      text-decoration: underline;
+      margin: 0 8px;
+    }
+    footer a:hover { color: white; }
+    .footer-logo {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 8px;
+    }
+
+    /* ── Responsive ──────────── */
+    @media (max-width: 600px) {
+      .store-card { flex-direction: column; }
+      .store-actions { flex-direction: row; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav>
+  <div class="nav-inner">
+    <a href="https://minoribi.github.io/kimono-hiyori/" class="nav-logo">
+      <div class="nav-logo-icon">和</div>
+      きもの日和
+    </a>
+    <a href="https://minoribi.github.io/kimono-hiyori/" class="nav-back">
+      ← アプリTOPへ
+    </a>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<div class="hero">
+  <p class="hero-label">KIMONO HIYORI</p>
+  <h1>全国 着物店舗マップ</h1>
+  <p>全国の着物・呉服店舗情報をまとめています</p>
+  <div class="hero-count">全国 <span id="totalCount">0</span> 店舗掲載</div>
+</div>
+
+<!-- ── Search ── -->
+<div class="search-wrap">
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input
+      type="text"
+      class="search-input"
+      id="searchInput"
+      placeholder="店舗名・都道府県・住所で検索"
+      autocomplete="off"
+    >
+    <button class="search-clear" id="searchClear">✕</button>
+  </div>
+</div>
+
+<!-- ── Region Tabs ── -->
+<div class="tabs-wrap">
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-region="全国">全国</button>
+    <button class="tab" data-region="北海道・東北">北海道・東北</button>
+    <button class="tab" data-region="関東">関東</button>
+    <button class="tab" data-region="中部">中部</button>
+    <button class="tab" data-region="近畿">近畿</button>
+    <button class="tab" data-region="中国・四国">中国・四国</button>
+    <button class="tab" data-region="九州・沖縄">九州・沖縄</button>
+  </div>
+</div>
+
+<!-- ── Store List ── -->
+<div class="list-wrap">
+  <p class="result-count" id="resultCount"></p>
+  <div id="storeList"></div>
+</div>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="footer-logo">きもの日和</div>
+  <div>
+    <a href="https://minoribi.github.io/kimono-hiyori/">アプリについて</a>
+    <a href="https://minoribi.github.io/kimono-hiyori/privacy_policy.html">プライバシーポリシー</a>
+  </div>
+  <p style="margin-top:8px;">© きもの日和 / みのりび合同会社</p>
+</footer>
+
+<script>
+// ── 店舗データ ──────────────────────────────────
+const STORES = [
+  // 北海道・東北
+  { prefecture: '北海道', region: '北海道・東北', name: 'きもの やまと 札幌エスタ店', address: '札幌市中央区北5条西2丁目 札幌エスタ 9F', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものやまと+札幌エスタ', websiteUrl: 'https://www.kimono-yamato.co.jp/' },
+  { prefecture: '北海道', region: '北海道・東北', name: 'たんす屋 札幌店', address: '札幌市中央区南1条西3丁目 大丸札幌店 6F', mapUrl: 'https://www.google.com/maps/search/?api=1&query=たんす屋+札幌', websiteUrl: 'https://tansuya.jp/' },
+  { prefecture: '北海道', region: '北海道・東北', name: '丸三 ホシナ', address: '札幌市中央区大通西2丁目', mapUrl: 'https://www.google.com/maps/search/?api=1&query=丸三ホシナ+札幌', websiteUrl: 'https://marumitsu-hoshina.co.jp/' },
+  { prefecture: '青森県', region: '北海道・東北', name: 'きもの処 えり正', address: '青森市古川1-11-1', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きもの処えり正+青森', websiteUrl: 'http://erisho.com/' },
+  { prefecture: '青森県', region: '北海道・東北', name: '津軽 呉服の山寅', address: '弘前市土手町59', mapUrl: 'https://www.google.com/maps/search/?api=1&query=呉服の山寅+弘前', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+弘前' },
+  { prefecture: '岩手県', region: '北海道・東北', name: '藤藤（ふじとう）', address: '盛岡市中ノ橋通1-10-3', mapUrl: 'https://www.google.com/maps/search/?api=1&query=藤藤+盛岡', websiteUrl: 'https://fujito-kimono.jp/' },
+  { prefecture: '岩手県', region: '北海道・東北', name: 'きもの あかね屋', address: '盛岡市菜園2-8-10', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものあかね屋+盛岡', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+盛岡' },
+  { prefecture: '宮城県', region: '北海道・東北', name: 'たんす屋 仙台パルコ店', address: '仙台市青葉区中央1-2-3 仙台パルコ 7F', mapUrl: 'https://www.google.com/maps/search/?api=1&query=たんす屋+仙台パルコ', websiteUrl: 'https://tansuya.jp/' },
+  { prefecture: '宮城県', region: '北海道・東北', name: 'きもの やまと 仙台店', address: '仙台市青葉区一番町3-11-15', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものやまと+仙台', websiteUrl: 'https://www.kimono-yamato.co.jp/' },
+  { prefecture: '秋田県', region: '北海道・東北', name: '岡田屋 呉服店', address: '秋田市中通2-1-23', mapUrl: 'https://www.google.com/maps/search/?api=1&query=岡田屋呉服店+秋田', websiteUrl: 'http://okadayagofukuten.jp/' },
+  { prefecture: '秋田県', region: '北海道・東北', name: 'きもの処 千代田', address: '秋田市大町3-2-8', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きもの処千代田+秋田', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+秋田' },
+  { prefecture: '山形県', region: '北海道・東北', name: 'とみひろ 山形本店', address: '山形市若宮2-10-1', mapUrl: 'https://www.google.com/maps/search/?api=1&query=とみひろ+山形本店', websiteUrl: 'https://tomihiro.co.jp/' },
+  { prefecture: '山形県', region: '北海道・東北', name: 'きもの 蔵王屋', address: '山形市七日町2-7-18', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きもの蔵王屋+山形', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+山形' },
+  { prefecture: '福島県', region: '北海道・東北', name: 'いわき 呉服店', address: '福島市置賜町8-25', mapUrl: 'https://www.google.com/maps/search/?api=1&query=いわき呉服店+福島', websiteUrl: 'https://iwaki-kimono.jp/' },
+  { prefecture: '福島県', region: '北海道・東北', name: 'きもの 鈴傳', address: '郡山市中町15-1', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きもの鈴傳+郡山', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+郡山' },
+  // 関東
+  { prefecture: '茨城県', region: '関東', name: 'きもの 志お屋', address: '水戸市泉町2-3-22', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きもの志お屋+水戸', websiteUrl: 'https://www.shioya-kimono.com/' },
+  { prefecture: '茨城県', region: '関東', name: 'たんす屋 水戸店', address: '水戸市宮町1-1-1 京成百貨店 3F', mapUrl: 'https://www.google.com/maps/search/?api=1&query=たんす屋+水戸', websiteUrl: 'https://tansuya.jp/' },
+  { prefecture: '栃木県', region: '関東', name: 'しゃなり', address: '宇都宮市馬場通り4-1-1', mapUrl: 'https://www.google.com/maps/search/?api=1&query=しゃなり+宇都宮', websiteUrl: 'https://shanari.com/' },
+  { prefecture: '栃木県', region: '関東', name: 'きもの やまと 宇都宮店', address: '宇都宮市馬場通り4-1-1 FKDショッピングモール', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものやまと+宇都宮', websiteUrl: 'https://www.kimono-yamato.co.jp/' },
+  { prefecture: '群馬県', region: '関東', name: '小川屋', address: '前橋市千代田町2-7-15', mapUrl: 'https://www.google.com/maps/search/?api=1&query=小川屋+前橋', websiteUrl: 'https://www.kimono-ogawaya.co.jp/' },
+  { prefecture: '群馬県', region: '関東', name: 'ふじや 呉服店', address: '高崎市本町27', mapUrl: 'https://www.google.com/maps/search/?api=1&query=ふじや呉服店+高崎', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+高崎' },
+  { prefecture: '埼玉県', region: '関東', name: 'たんす屋NEXT 大宮店', address: 'さいたま市大宮区高鼻町2-1-1', mapUrl: 'https://www.google.com/maps/search/?api=1&query=たんす屋+大宮', websiteUrl: 'https://tansuya.jp/' },
+  { prefecture: '埼玉県', region: '関東', name: 'きもの やまと 川越店', address: '川越市脇田本町5-1 川越モディ 3F', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものやまと+川越', websiteUrl: 'https://www.kimono-yamato.co.jp/' },
+  { prefecture: '千葉県', region: '関東', name: 'きもの やまと 千葉店', address: '千葉市中央区新町1000 センシティタワー 4F', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものやまと+千葉', websiteUrl: 'https://www.kimono-yamato.co.jp/' },
+  { prefecture: '千葉県', region: '関東', name: 'たんす屋 柏店', address: '柏市柏1-3-16', mapUrl: 'https://www.google.com/maps/search/?api=1&query=たんす屋+柏', websiteUrl: 'https://tansuya.jp/' },
+  { prefecture: '東京都', region: '関東', name: '銀座 越後屋', address: '中央区銀座2-6-5', mapUrl: 'https://www.google.com/maps/search/?api=1&query=銀座+越後屋', websiteUrl: 'https://www.ginza-echigoya.jp/' },
+  { prefecture: '東京都', region: '関東', name: '竺仙（ちくせん）', address: '中央区日本橋小伝馬町12-5', mapUrl: 'https://www.google.com/maps/search/?api=1&query=竺仙+日本橋', websiteUrl: 'https://www.chikusen.co.jp/' },
+  { prefecture: '東京都', region: '関東', name: '銀座もとじ', address: '中央区銀座2-8-11', mapUrl: 'https://www.google.com/maps/search/?api=1&query=銀座もとじ', websiteUrl: 'https://www.motoji.co.jp/' },
+  { prefecture: '東京都', region: '関東', name: 'きもの やまと 渋谷ヒカリエ店', address: '渋谷区渋谷2-21-1 渋谷ヒカリエ ShinQs 4F', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものやまと+渋谷ヒカリエ', websiteUrl: 'https://www.kimono-yamato.co.jp/' },
+  { prefecture: '東京都', region: '関東', name: 'たんす屋 新宿店', address: '新宿区新宿3-24-3 NEWoMan新宿', mapUrl: 'https://www.google.com/maps/search/?api=1&query=たんす屋+新宿', websiteUrl: 'https://tansuya.jp/' },
+  { prefecture: '神奈川県', region: '関東', name: 'Tokyo135° 横浜店', address: '横浜市西区南幸2-15-13', mapUrl: 'https://www.google.com/maps/search/?api=1&query=Tokyo135+横浜', websiteUrl: 'https://www.kimonoyasan.co.jp/' },
+  { prefecture: '神奈川県', region: '関東', name: 'きもの やまと 横浜そごう店', address: '横浜市西区高島2-18-1 横浜そごう 6F', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものやまと+横浜そごう', websiteUrl: 'https://www.kimono-yamato.co.jp/' },
+  { prefecture: '神奈川県', region: '関東', name: 'たんす屋 鎌倉店', address: '鎌倉市小町2-14-15', mapUrl: 'https://www.google.com/maps/search/?api=1&query=たんす屋+鎌倉', websiteUrl: 'https://tansuya.jp/' },
+  // 中部
+  { prefecture: '新潟県', region: '中部', name: 'きものの小川', address: '上越市本町4-1-6', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものの小川+上越', websiteUrl: 'https://kimono-ogawa.jp/' },
+  { prefecture: '新潟県', region: '中部', name: 'きもの やまと 新潟店', address: '新潟市中央区花園1-96-47 CoCoLo新潟 2F', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものやまと+新潟', websiteUrl: 'https://www.kimono-yamato.co.jp/' },
+  { prefecture: '富山県', region: '中部', name: '牛島屋', address: '富山市千石町2-3-15', mapUrl: 'https://www.google.com/maps/search/?api=1&query=牛島屋+富山', websiteUrl: 'https://ushijimaya.co.jp/' },
+  { prefecture: '富山県', region: '中部', name: 'きもの 東京屋', address: '富山市総曲輪3-1-17', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きもの東京屋+富山', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+富山' },
+  { prefecture: '石川県', region: '中部', name: 'ゑり虎（えりとら）', address: '金沢市片町2-1-3', mapUrl: 'https://www.google.com/maps/search/?api=1&query=ゑり虎+金沢', websiteUrl: 'https://eritora.com/' },
+  { prefecture: '石川県', region: '中部', name: '加賀友禅 梅染（うめぞめ）', address: '金沢市東山1-8-10', mapUrl: 'https://www.google.com/maps/search/?api=1&query=加賀友禅+梅染+金沢', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=加賀友禅+金沢' },
+  { prefecture: '福井県', region: '中部', name: '和あらいや', address: '坂井市丸岡町富田町1-1', mapUrl: 'https://www.google.com/maps/search/?api=1&query=和あらいや+福井', websiteUrl: 'https://www.wa-araiya.com/' },
+  { prefecture: '福井県', region: '中部', name: 'きもの 丸岡 福井本店', address: '福井市中央1-8-1', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きもの丸岡+福井', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+福井' },
+  { prefecture: '山梨県', region: '中部', name: 'きもの 自由庵', address: '甲府市丸の内1-2-11', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きもの自由庵+甲府', websiteUrl: 'https://jiyu-an.com/' },
+  { prefecture: '山梨県', region: '中部', name: '甲州きもの 藤屋', address: '甲府市丸の内2-10-13', mapUrl: 'https://www.google.com/maps/search/?api=1&query=甲州きもの藤屋+甲府', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+甲府' },
+  { prefecture: '長野県', region: '中部', name: 'たちばな 長野本店', address: '長野市鶴賀緑町2214', mapUrl: 'https://www.google.com/maps/search/?api=1&query=たちばな+長野本店', websiteUrl: 'https://www.tachibana-group.co.jp/' },
+  { prefecture: '長野県', region: '中部', name: 'きもの 山形屋', address: '松本市中央2-2-15', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きもの山形屋+松本', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+松本' },
+  { prefecture: '岐阜県', region: '中部', name: '呉服のささや', address: '岐阜市神田町6-11', mapUrl: 'https://www.google.com/maps/search/?api=1&query=呉服のささや+岐阜', websiteUrl: 'https://gofuku-sasaya.com/' },
+  { prefecture: '岐阜県', region: '中部', name: '大橋 呉服店', address: '大垣市高屋町1-45', mapUrl: 'https://www.google.com/maps/search/?api=1&query=大橋呉服店+大垣', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+大垣' },
+  { prefecture: '静岡県', region: '中部', name: '京都きもの泰三', address: '静岡市葵区紺屋町1-1', mapUrl: 'https://www.google.com/maps/search/?api=1&query=京都きもの泰三+静岡', websiteUrl: 'https://taizo-kimono.com/' },
+  { prefecture: '静岡県', region: '中部', name: 'ふじや 呉服店', address: '浜松市中央区伝馬町315', mapUrl: 'https://www.google.com/maps/search/?api=1&query=ふじや呉服店+浜松', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+浜松' },
+  { prefecture: '愛知県', region: '中部', name: 'たんす屋 名古屋栄店', address: '名古屋市中区栄3-4-5', mapUrl: 'https://www.google.com/maps/search/?api=1&query=たんす屋+名古屋栄', websiteUrl: 'https://tansuya.jp/' },
+  { prefecture: '愛知県', region: '中部', name: 'きもの やまと 名古屋パルコ店', address: '名古屋市中区栄3-29-1 名古屋パルコ 5F', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものやまと+名古屋パルコ', websiteUrl: 'https://www.kimono-yamato.co.jp/' },
+  { prefecture: '愛知県', region: '中部', name: 'さが美 名古屋本店', address: '名古屋市中村区名駅4-7-1', mapUrl: 'https://www.google.com/maps/search/?api=1&query=さが美+名古屋', websiteUrl: 'https://www.sagami-kimono.co.jp/' },
+  // 近畿
+  { prefecture: '三重県', region: '近畿', name: 'うつくしや 東村呉服店', address: '松阪市本町2173', mapUrl: 'https://www.google.com/maps/search/?api=1&query=うつくしや+松阪', websiteUrl: 'https://utsukushiya.com/' },
+  { prefecture: '三重県', region: '近畿', name: 'きもの いせや', address: '伊勢市宇治今在家町59', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものいせや+伊勢', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+伊勢' },
+  { prefecture: '滋賀県', region: '近畿', name: 'きもの処 伴治郎', address: '近江八幡市仲屋町上7', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きもの処伴治郎+滋賀', websiteUrl: 'https://vanjiro.com/' },
+  { prefecture: '滋賀県', region: '近畿', name: '呉服 はたや商事', address: '草津市大路1-13-40', mapUrl: 'https://www.google.com/maps/search/?api=1&query=呉服はたや商事+草津', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+草津+滋賀' },
+  { prefecture: '京都府', region: '近畿', name: '京ごふく ゑり善', address: '京都市下京区四条河原町御旅町', mapUrl: 'https://www.google.com/maps/search/?api=1&query=ゑり善+京都', websiteUrl: 'https://www.erizen.co.jp/' },
+  { prefecture: '京都府', region: '近畿', name: '千總（ちそう）', address: '京都市中京区三条通烏丸西入御倉町80', mapUrl: 'https://www.google.com/maps/search/?api=1&query=千總+京都+三条', websiteUrl: 'https://www.chiso.co.jp/' },
+  { prefecture: '京都府', region: '近畿', name: 'たんす屋 京都河原町店', address: '京都市中京区河原町通蛸薬師上ル', mapUrl: 'https://www.google.com/maps/search/?api=1&query=たんす屋+京都河原町', websiteUrl: 'https://tansuya.jp/' },
+  { prefecture: '大阪府', region: '近畿', name: 'きもの やまと 梅田店', address: '大阪市北区芝田1-1-3 阪急三番街 2F', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものやまと+阪急三番街', websiteUrl: 'https://www.kimono-yamato.co.jp/' },
+  { prefecture: '大阪府', region: '近畿', name: 'たんす屋 心斎橋店', address: '大阪市中央区心斎橋筋2-7-25', mapUrl: 'https://www.google.com/maps/search/?api=1&query=たんす屋+心斎橋', websiteUrl: 'https://tansuya.jp/' },
+  { prefecture: '大阪府', region: '近畿', name: '浅田呉服店', address: '大阪市北区梅田2-2-22', mapUrl: 'https://www.google.com/maps/search/?api=1&query=浅田呉服店+大阪梅田', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=浅田呉服店+大阪' },
+  { prefecture: '兵庫県', region: '近畿', name: 'たんす屋 神戸元町店', address: '神戸市中央区元町通1-4-13', mapUrl: 'https://www.google.com/maps/search/?api=1&query=たんす屋+神戸元町', websiteUrl: 'https://tansuya.jp/' },
+  { prefecture: '兵庫県', region: '近畿', name: 'きもの やまと 神戸店', address: '神戸市中央区三宮町1-9-1 神戸三宮阪急 4F', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものやまと+神戸三宮', websiteUrl: 'https://www.kimono-yamato.co.jp/' },
+  { prefecture: '奈良県', region: '近畿', name: '装いの道 奈良店', address: '奈良市三条本町1-1', mapUrl: 'https://www.google.com/maps/search/?api=1&query=装いの道+奈良', websiteUrl: 'https://www.yosoinomichi.com/' },
+  { prefecture: '奈良県', region: '近畿', name: 'きもの処 よしおか', address: '奈良市三条本町1-5', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きもの処よしおか+奈良', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+奈良' },
+  { prefecture: '和歌山県', region: '近畿', name: 'きもの処 おかはな', address: '和歌山市万町25', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きもの処おかはな+和歌山', websiteUrl: 'https://okahana.com/' },
+  { prefecture: '和歌山県', region: '近畿', name: 'きもの処 和歌浦屋', address: '和歌山市雑賀屋町東ノ丁16', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きもの処和歌浦屋+和歌山', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+和歌山' },
+  // 中国・四国
+  { prefecture: '鳥取県', region: '中国・四国', name: '京呉服 きむら', address: '米子市西福原2-1-10', mapUrl: 'https://www.google.com/maps/search/?api=1&query=京呉服きむら+米子', websiteUrl: 'https://kimura-kimono.jp/' },
+  { prefecture: '鳥取県', region: '中国・四国', name: 'きもの 岡本', address: '鳥取市栄町503', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きもの岡本+鳥取', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+鳥取' },
+  { prefecture: '島根県', region: '中国・四国', name: 'きものギャラリー 八重垣', address: '松江市西川津町2103-1', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものギャラリー八重垣+松江', websiteUrl: 'https://yaegaki-kimono.jp/' },
+  { prefecture: '島根県', region: '中国・四国', name: '出雲 着物処 大社屋', address: '出雲市大社町杵築東804', mapUrl: 'https://www.google.com/maps/search/?api=1&query=出雲大社屋+着物', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+出雲' },
+  { prefecture: '岡山県', region: '中国・四国', name: '武蔵屋 呉服店', address: '岡山市北区表町1-9-48', mapUrl: 'https://www.google.com/maps/search/?api=1&query=武蔵屋呉服店+岡山', websiteUrl: 'https://musashiya.co.jp/' },
+  { prefecture: '岡山県', region: '中国・四国', name: 'きもの やまと 岡山天満屋店', address: '岡山市北区表町2-1-1 天満屋岡山店 6F', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものやまと+岡山天満屋', websiteUrl: 'https://www.kimono-yamato.co.jp/' },
+  { prefecture: '広島県', region: '中国・四国', name: 'やしま 広島店', address: '広島市中区本通9-13', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものやしま+広島', websiteUrl: 'https://yashima-kimono.info/' },
+  { prefecture: '広島県', region: '中国・四国', name: 'たんす屋 広島店', address: '広島市中区本通10-12', mapUrl: 'https://www.google.com/maps/search/?api=1&query=たんす屋+広島本通', websiteUrl: 'https://tansuya.jp/' },
+  { prefecture: '山口県', region: '中国・四国', name: '近江屋 呉服店', address: '山口市中市町3-1', mapUrl: 'https://www.google.com/maps/search/?api=1&query=近江屋呉服店+山口', websiteUrl: 'https://www.oumiya.jp/' },
+  { prefecture: '山口県', region: '中国・四国', name: '和服 周南堂', address: '周南市銀南街1-2', mapUrl: 'https://www.google.com/maps/search/?api=1&query=和服周南堂+周南', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+周南+山口' },
+  { prefecture: '徳島県', region: '中国・四国', name: '山口 呉服店', address: '徳島市通町1-18', mapUrl: 'https://www.google.com/maps/search/?api=1&query=山口呉服店+徳島', websiteUrl: 'https://yamaguchi-gofuku.com/' },
+  { prefecture: '徳島県', region: '中国・四国', name: 'きもの 阿波屋', address: '徳島市両国橋本町5-4', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きもの阿波屋+徳島', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+徳島' },
+  { prefecture: '香川県', region: '中国・四国', name: 'なぎさ本舗 旭屋', address: '高松市兵庫町1-10', mapUrl: 'https://www.google.com/maps/search/?api=1&query=なぎさ本舗旭屋+高松', websiteUrl: 'https://asahiya.shop/' },
+  { prefecture: '香川県', region: '中国・四国', name: 'きもの 丸京', address: '高松市丸亀町9-1', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きもの丸京+高松', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+高松+香川' },
+  { prefecture: '愛媛県', region: '中国・四国', name: '塩屋 呉服店', address: '松山市大街道2-4-1', mapUrl: 'https://www.google.com/maps/search/?api=1&query=塩屋呉服店+松山', websiteUrl: 'https://shioya-gofuku.jp/' },
+  { prefecture: '愛媛県', region: '中国・四国', name: 'たんす屋 松山店', address: '松山市二番町3-7-1', mapUrl: 'https://www.google.com/maps/search/?api=1&query=たんす屋+松山', websiteUrl: 'https://tansuya.jp/' },
+  { prefecture: '高知県', region: '中国・四国', name: 'きもの べにや', address: '高知市帯屋町2-1-29', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものべにや+高知', websiteUrl: 'https://www.kimono-beniya.jp/' },
+  { prefecture: '高知県', region: '中国・四国', name: '呉服 やなぎ', address: '高知市升形13-20', mapUrl: 'https://www.google.com/maps/search/?api=1&query=呉服やなぎ+高知', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+高知' },
+  // 九州・沖縄
+  { prefecture: '福岡県', region: '九州・沖縄', name: 'きもの やまと 福岡パルコ店', address: '福岡市中央区天神2-11-1 福岡パルコ 4F', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものやまと+福岡パルコ', websiteUrl: 'https://www.kimono-yamato.co.jp/' },
+  { prefecture: '福岡県', region: '九州・沖縄', name: 'たんす屋 福岡天神店', address: '福岡市中央区天神1-12-9', mapUrl: 'https://www.google.com/maps/search/?api=1&query=たんす屋+福岡天神', websiteUrl: 'https://tansuya.jp/' },
+  { prefecture: '福岡県', region: '九州・沖縄', name: 'さが美 小倉店', address: '北九州市小倉北区京町3-1-1 小倉伊勢丹 5F', mapUrl: 'https://www.google.com/maps/search/?api=1&query=さが美+小倉', websiteUrl: 'https://www.sagami-kimono.co.jp/' },
+  { prefecture: '佐賀県', region: '九州・沖縄', name: 'エリカ 呉服店', address: '佐賀市駅前中央1-4-17', mapUrl: 'https://www.google.com/maps/search/?api=1&query=エリカ呉服店+佐賀', websiteUrl: 'https://erika-kimono.com/' },
+  { prefecture: '佐賀県', region: '九州・沖縄', name: 'きもの専門館 さが美 佐賀店', address: '佐賀市白山2-1-30', mapUrl: 'https://www.google.com/maps/search/?api=1&query=さが美+佐賀', websiteUrl: 'https://www.sagami-kimono.co.jp/' },
+  { prefecture: '長崎県', region: '九州・沖縄', name: 'ゆきむら 呉服店', address: '長崎市築町4-15', mapUrl: 'https://www.google.com/maps/search/?api=1&query=ゆきむら呉服店+長崎', websiteUrl: 'https://yukimura-gofuku.jp/' },
+  { prefecture: '長崎県', region: '九州・沖縄', name: '呉服 松島屋', address: '長崎市浜町8-25', mapUrl: 'https://www.google.com/maps/search/?api=1&query=呉服松島屋+長崎浜町', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+長崎' },
+  { prefecture: '熊本県', region: '九州・沖縄', name: '呉服のきくや', address: '熊本市中央区下通1-9-10', mapUrl: 'https://www.google.com/maps/search/?api=1&query=呉服のきくや+熊本', websiteUrl: 'https://kikuya-gofuku.com/' },
+  { prefecture: '熊本県', region: '九州・沖縄', name: 'たんす屋 熊本下通店', address: '熊本市中央区下通1-8-10', mapUrl: 'https://www.google.com/maps/search/?api=1&query=たんす屋+熊本下通', websiteUrl: 'https://tansuya.jp/' },
+  { prefecture: '大分県', region: '九州・沖縄', name: 'なかの座', address: '大分市中央町1-4-11', mapUrl: 'https://www.google.com/maps/search/?api=1&query=なかの座+大分', websiteUrl: 'https://nakanoza.com/' },
+  { prefecture: '大分県', region: '九州・沖縄', name: '呉服 田畑', address: '大分市中央町1-4-2', mapUrl: 'https://www.google.com/maps/search/?api=1&query=呉服田畑+大分', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+大分' },
+  { prefecture: '宮崎県', region: '九州・沖縄', name: 'きもの 染織 緒方', address: '宮崎市橘通東3-2-21', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きもの染織緒方+宮崎', websiteUrl: 'https://kimono-ogata.com/' },
+  { prefecture: '宮崎県', region: '九州・沖縄', name: 'きもの みや田', address: '宮崎市橘通西3-10-25', mapUrl: 'https://www.google.com/maps/search/?api=1&query=きものみや田+宮崎', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+宮崎' },
+  { prefecture: '鹿児島県', region: '九州・沖縄', name: 'ごふくの たかだ', address: '鹿児島市東千石町14-5', mapUrl: 'https://www.google.com/maps/search/?api=1&query=ごふくのたかだ+鹿児島', websiteUrl: 'https://gofukunotakada.com/' },
+  { prefecture: '鹿児島県', region: '九州・沖縄', name: '呉服の吉田', address: '鹿児島市千日町4-12', mapUrl: 'https://www.google.com/maps/search/?api=1&query=呉服の吉田+鹿児島', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=呉服+鹿児島' },
+  { prefecture: '沖縄県', region: '九州・沖縄', name: '十河（そごう）呉服店', address: '那覇市松尾2-8-29', mapUrl: 'https://www.google.com/maps/search/?api=1&query=十河呉服店+那覇', websiteUrl: 'https://sogo-gofuku.com/' },
+  { prefecture: '沖縄県', region: '九州・沖縄', name: '琉球 着物処 首里', address: '那覇市首里真和志町1-31', mapUrl: 'https://www.google.com/maps/search/?api=1&query=琉球着物処首里+那覇', websiteUrl: 'https://www.google.com/maps/search/?api=1&query=着物+那覇+沖縄' },
+];
+
+// ── ロジック ────────────────────────────────────
+let currentRegion = '全国';
+let currentQuery  = '';
+
+const totalCount  = document.getElementById('totalCount');
+const searchInput = document.getElementById('searchInput');
+const searchClear = document.getElementById('searchClear');
+const resultCount = document.getElementById('resultCount');
+const storeList   = document.getElementById('storeList');
+
+totalCount.textContent = STORES.length;
+
+// タブ
+document.getElementById('tabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab');
+  if (!btn) return;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  currentRegion = btn.dataset.region;
+  render();
+});
+
+// 検索
+searchInput.addEventListener('input', () => {
+  currentQuery = searchInput.value.trim();
+  searchClear.classList.toggle('visible', currentQuery.length > 0);
+  render();
+});
+searchClear.addEventListener('click', () => {
+  searchInput.value = '';
+  currentQuery = '';
+  searchClear.classList.remove('visible');
+  searchInput.focus();
+  render();
+});
+
+function filtered() {
+  return STORES.filter(s => {
+    const matchRegion = currentRegion === '全国' || s.region === currentRegion;
+    if (!matchRegion) return false;
+    if (!currentQuery) return true;
+    const q = currentQuery.toLowerCase();
+    return s.name.includes(q) || s.prefecture.includes(q) || s.address.includes(q);
+  });
+}
+
+function render() {
+  const stores = filtered();
+  resultCount.innerHTML = currentQuery
+    ? `「<strong>${currentQuery}</strong>」の検索結果：<strong>${stores.length}</strong> 件`
+    : `<strong>${stores.length}</strong> 店舗`;
+
+  if (stores.length === 0) {
+    storeList.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">🏮</div>
+        <p>条件に合う店舗が見つかりませんでした。<br>別のキーワードをお試しください。</p>
+      </div>`;
+    return;
+  }
+
+  // 都道府県でグループ化
+  const grouped = {};
+  stores.forEach(s => {
+    if (!grouped[s.prefecture]) grouped[s.prefecture] = [];
+    grouped[s.prefecture].push(s);
+  });
+
+  storeList.innerHTML = Object.entries(grouped).map(([pref, list]) => `
+    <div class="pref-header">
+      <span class="pref-name">${pref}</span>
+      <span class="pref-badge">${list.length}店舗</span>
+    </div>
+    ${list.map(s => `
+      <div class="store-card">
+        <div class="store-info">
+          <div class="store-name">${s.name}</div>
+          <div class="store-address">
+            <span class="store-address-icon">📍</span>
+            <span>${s.address}</span>
+          </div>
+        </div>
+        <div class="store-actions">
+          <a class="store-btn" href="${s.mapUrl}" target="_blank" rel="noopener">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            マップ
+          </a>
+          <a class="store-btn" href="${s.websiteUrl}" target="_blank" rel="noopener">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+              <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+            </svg>
+            公式サイト
+          </a>
+        </div>
+      </div>
+    `).join('')}
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>
